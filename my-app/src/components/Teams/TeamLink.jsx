@@ -1,13 +1,16 @@
 import React from 'react';
-import GroupIcon from '@material-ui/icons/Group';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
-function TeamLink({ name }) {
+function TeamLink({ name, selectTeam }) {
   return (
-    <div className="team-link">
-      <p>
-        <GroupIcon />
-        {name}
-      </p>
+    <div
+      className="team-link"
+      onClick={() => {
+        selectTeam(name);
+      }}
+    >
+      <AccountCircleIcon className="team-icon" />
+      <h4>{name}</h4>
     </div>
   );
 }

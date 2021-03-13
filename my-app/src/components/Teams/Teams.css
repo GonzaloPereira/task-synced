@@ -4,12 +4,13 @@
 }
 /* Team Navigation Panel */
 .team-nav {
-  width: 200px;
-  min-height: calc(100vh - 130px);
+  min-width: 200px;
+  min-height: calc(100vh - 110px);
   box-sizing: border-box;
   background-color: #393e46;
   color: white;
 }
+/* Team title  */
 .team-title {
   background-color: #222831;
   color: white;
@@ -17,20 +18,56 @@
   padding-top: 1rem;
   padding-bottom: 1rem;
   margin: 0;
+  display: flex;
+  flex-direction: row;
 }
 .team-title h3 {
   margin: 0;
 }
+.add-icon {
+  margin-left: 60px;
+  cursor: pointer;
+  color: #00adb5;
+}
+.team-add {
+  margin: 0;
+  position: absolute;
+  background-color: #393e46;
+  left: 210px;
+  top: 70px;
+  padding: 15px 15px;
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  border-radius: 10px 10px;
+}
+.team-add-row {
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+}
+.team-add-row p {
+  margin: 0;
+}
+.team-add-row:first-child {
+  margin-bottom: 10px;
+}
+/* Team links  */
 .team-link {
   padding-left: 1rem;
   padding-top: 1rem;
   padding-bottom: 1rem;
   margin: 0;
+  display: flex;
+  flex-direction: row;
 }
-.team-link p {
+.team-link h4 {
   margin: 0;
+  font-weight: 500;
 }
-
+.team-icon {
+  margin-right: 5px;
+}
 /* Team Description */
 .team-desc {
   padding-left: 3%;

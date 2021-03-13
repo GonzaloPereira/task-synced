@@ -16,7 +16,7 @@ function Header({ scheduleOn, teamsOn }) {
           Teams
         </h2>
         <h2 className="links">Profile</h2>
-        <NotificationsIcon style={{ color: 'yellow' }} />
+        <NotificationsIcon className="links not-icon" />
       </div>
     </div>
   );
