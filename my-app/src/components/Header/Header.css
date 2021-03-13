@@ -1,0 +1,24 @@
+.header {
+  background-color: #71c9ce;
+  padding: 1% 3%;
+  height: 50px;
+}
+.links {
+  color: #fff;
+  margin-top: 0;
+  display: inline-block;
+  padding-left: 1rem;
+  padding-right: 1em;
+}
+h2.links:hover {
+  color: #e3fdfd;
+}
+.left {
+  display: inline-block;
+}
+.right {
+  display: inline-block;
+  position: absolute;
+  top: 25px;
+  right: 1rem;
+}
