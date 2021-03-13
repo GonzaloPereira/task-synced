@@ -1,0 +1,37 @@
+.teams-container {
+  display: flex;
+  flex-direction: row;
+}
+/* Team Navigation Panel */
+.team-nav {
+  width: 200px;
+  min-height: calc(100vh - 130px);
+  box-sizing: border-box;
+  background-color: #393e46;
+  color: white;
+}
+.team-title {
+  background-color: #222831;
+  color: white;
+  padding-left: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  margin: 0;
+}
+.team-title h3 {
+  margin: 0;
+}
+.team-link {
+  padding-left: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  margin: 0;
+}
+.team-link p {
+  margin: 0;
+}
+
+/* Team Description */
+.team-desc {
+  padding-left: 3%;
+}

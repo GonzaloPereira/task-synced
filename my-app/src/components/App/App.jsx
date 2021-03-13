@@ -21,8 +21,10 @@ function App() {
           setShowTeams(true);
         }}
       />
-      {showSchedule && <Schedule />}
-      {showTeams && <Teams />}
+      <div className="content-container">
+        {showSchedule && <Schedule />}
+        {showTeams && <Teams />}
+      </div>
       <Footer />
     </main>
   );

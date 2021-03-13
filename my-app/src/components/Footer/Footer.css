@@ -1,10 +1,8 @@
 .footer {
   text-align: center;
-  color: gray;
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  height: 60px;
+  color: white;
+  height: 50px;
   width: 100%;
   padding: auto;
+  background-color: #222831;
 }

@@ -1,7 +1,8 @@
 .header {
-  background-color: #71c9ce;
+  background-color: #00adb5;
   padding: 1% 3%;
-  height: 50px;
+  height: 80px;
+  box-sizing: border-box;
 }
 .links {
   color: #fff;
