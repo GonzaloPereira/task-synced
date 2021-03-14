@@ -1,35 +1,394 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const app = express();
 
 const port = 3080;
 
 // place holder for the data
-const items = [{ item: 'primer item' }, { item: 'segundo item' }];
 
-// // parse application/x-www-form-urlencoded
-// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-// // parse application/json
-app.use(bodyParser.json());
+const url = 'mongodb://localhost:27017/TaskSyncedDB';
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
-// app.use((req, res) => {
-//   res.setHeader('Content-Type', 'text/plain');
-//   res.write('you posted:\n');
-//   res.end(JSON.stringify(req.body, null, 2));
-// });
+// Schemas and Models
 
-app.get('/api/users', (req, res) => {
-  res.json(items);
+const taskSchema = new mongoose.Schema({
+  name: String,
+  description: String,
+  date: Date,
 });
+const Task = mongoose.model('Task', taskSchema);
 
-app.post('/api/user', (req, res) => {
-  const item = req.body;
-  console.log('Adding user::::::::', item);
-  items.push(item);
-  res.json('user added');
+const teamSchema = new mongoose.Schema({
+  name: String,
+  members: [{ id: String, name: String }],
+  tasks: [taskSchema],
 });
+const Team = mongoose.model('Team', teamSchema);
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String,
+  tasks: [taskSchema],
+  teams: [{ id: String, name: String }],
+});
+const User = mongoose.model('User', userSchema);
+
+// Inserting an example team
+const myTeam = new Team({
+  name: 'Los snickers',
+  members: [
+    { id: 1, name: 'gonzalote' },
+    { id: 2, name: 'El vinces' },
+  ],
+  tasks: [
+    {
+      name: 'first task',
+      description: 'La descripcion mas unica que te inventes',
+      date: new Date(),
+    },
+  ],
+});
+// myTeam.save();
+
+app
+  .route('/teams')
+  // Return all teams
+  .get((req, res) => {
+    Team.find((err, foundTeams) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(foundTeams);
+      }
+    });
+  })
+  // Creates a team
+  .post((req, res) => {
+    const { name, members, tasks } = req.body;
+    const team = new Team({
+      name: name,
+      members: members,
+      tasks: tasks,
+    });
+    team.save((err) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send('New team created');
+      }
+    });
+  });
+
+app
+  .route('/teams/:teamId')
+  // Return a team
+  .get((req, res) => {
+    Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(foundTeam);
+      }
+    });
+  })
+  // Deletes a team
+  .delete((req, res) => {
+    Team.deleteOne({ _id: req.params.teamId }, (err) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send('Succesfully deteled the article');
+      }
+    });
+  });
+
+app
+  .route('/teams/:teamId/tasks')
+  // Returns all tasks of a team
+  .get((req, res) => {
+    Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(foundTeam.tasks);
+      }
+    });
+  })
+  // Creates a new task for a team (and synchronizes it with users)
+  .post(async (req, res) => {
+    const { name, description, date } = req.body;
+    const newTask = new Task({
+      name: name,
+      description: description,
+      date: date,
+    });
+    try {
+      const team = await Team.findOneAndUpdate(
+        { _id: req.params.teamId },
+        { $push: { tasks: newTask } },
+        { new: true }
+      ).exec();
+      const { members } = team;
+      const membersId = members.map((member) => member.id);
+      await User.updateMany(
+        { _id: membersId },
+        { $push: { tasks: newTask } }
+      ).exec();
+      res.send('Sucessfully added task');
+    } catch (err) {
+      res.send(err);
+    }
+  });
+
+app
+  .route('teams/:teamId/tasks/taskId')
+  .get((req, res) => {
+    Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(
+          foundTeam.tasks.find((task) => task._id === req.params.taskId)
+        );
+      }
+    });
+  })
+  .patch(async (req, res) => {
+    const changes = req.body;
+    try {
+      const team = await Team.findOneAndUpdate(
+        { _id: req.params.teamId },
+        { $set: { tasks: { $set: changes } } }
+      ).exec();
+      const { members } = team;
+      const membersId = members.map((member) => member.id);
+      await User.updateMany(
+        { _id: membersId },
+        { $set: { tasks: { $set: changes } } }
+      ).exec();
+      res.send('Sucessfully updated the task');
+    } catch (err) {
+      res.send(err);
+    }
+  })
+  .delete(async (req, res) => {
+    try {
+      const team = await Team.findOneAndUpdate(
+        { _id: req.params.teamId },
+        { $pull: { tasks: { _id: req.params.taskId } } }
+      ).exec();
+      const { members } = team;
+      const membersId = members.map((member) => member.id);
+      await User.updateMany(
+        { _id: membersId },
+        { $pull: { tasks: { _id: req.params.taskId } } }
+      ).exec();
+      res.send('Sucessfully deleted the task');
+    } catch (err) {
+      res.send(err);
+    }
+  });
+
+app
+  .route('/teams/:teamId/members')
+  .get((req, res) => {
+    Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(foundTeam.members);
+      }
+    });
+  })
+  .post(async (req, res) => {
+    const { id, name } = req.body;
+    const newMember = {
+      id: id,
+      name: name,
+    };
+    try {
+      const team = await Team.findOneAndUpdate(
+        { _id: req.params.teamId },
+        { $push: { members: newMember } },
+        { new: true }
+      ).exec();
+      const { newTasks } = team;
+      await User.updateOne(
+        { _id: id },
+        { $push: { tasks: { $each: newTasks } } }
+      ).exec();
+      res.send('Sucessfully added user');
+    } catch (err) {
+      res.send(err);
+    }
+  });
+
+app
+  .route('/teams/:teamId/members/memberId')
+  .get((req, res) => {
+    Team.find((err, foundTeams) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(
+          foundTeams.member.find((member) => member._id === req.params.memberId)
+        );
+      }
+    });
+  })
+  .delete(async (req, res) => {
+    try {
+      await Team.findOneAndUpdate(
+        { _id: req.params.teamId },
+        { $pull: { members: { _id: req.params.memberId } } }
+      ).exec();
+
+      await User.updateOne(
+        { _id: req.params.memberId },
+        { $pull: { teams: { _id: req.params.teamId } } }
+      ).exec();
+      res.send('Sucessfully removed the member');
+    } catch (err) {
+      res.send(err);
+    }
+  });
+app
+  .route('/users')
+  // Returns all users
+  .get((req, res) => {
+    User.find((err, foundUsers) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(foundUsers);
+      }
+    });
+  })
+  // Creates a new user
+  .post((req, res) => {
+    const { name, email, password, tasks } = req.body;
+    const user = new User({
+      name: name,
+      email: email,
+      password: password,
+      tasks: tasks,
+    });
+    user.save((err) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send('Sucessfully created user');
+      }
+    });
+  });
+
+app
+  .route('/users/:userId')
+  // Returns user
+  .get((req, res) => {
+    User.findOne({ _id: req.params.userId }, (err, foundUser) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(foundUser);
+      }
+    });
+  })
+  // Edits user
+  .patch((req, res) => {
+    const changes = req.body;
+    User.updateOne({ _id: req.params.userId }, { $set: changes }, (err) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send('Sucessfully updated the user');
+      }
+    });
+  })
+  // Deletes user
+  .delete((req, res) => {
+    User.deleteOne({ _id: req.params.userId }, (err) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send('Sucessfully deleted the user');
+      }
+    });
+  });
+
+app
+  .route('/users/:userId/tasks')
+  .get((req, res) => {
+    User.findOne({ _id: req.params.userId }, (err, foundUser) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(foundUser.tasks);
+      }
+    });
+  })
+  .post((req, res) => {
+    const { name, description, date } = req.body;
+    const newTask = new Task({
+      name: name,
+      description: description,
+      date: date,
+    });
+    User.updateOne(
+      { _id: req.params.userId },
+      { $push: { tasks: newTask } },
+      (err) => {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send('Sucessfully added new task for this user');
+        }
+      }
+    );
+  });
+app
+  .route('/users/:userId/tasks/:taskId')
+  .get((req, res) => {
+    User.findOne({ _id: req.params.userId }, (err, foundUser) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(foundUser.task.find((task) => task._id === req.params.taskId));
+      }
+    });
+  })
+  .patch((req, res) => {
+    const changes = req.body;
+    User.updateOne(
+      { _id: req.params.userId },
+      { $set: { tasks: { $set: changes } } },
+      (err) => {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send('Sucessfully edited the task');
+        }
+      }
+    );
+  })
+  .delete((req, res) => {
+    User.updateOne(
+      { _id: req.params.userId },
+      { $pull: { tasks: { _id: req.params.taskId } } },
+      (err) => {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send('Sucessfully deleted the task');
+        }
+      }
+    );
+  });
 
 app.get('/', (req, res) => {
   res.send('App Works !!!!');
