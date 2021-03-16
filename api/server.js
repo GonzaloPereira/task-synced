@@ -102,7 +102,7 @@ app
       if (err) {
         res.send(err);
       } else {
-        res.send('Succesfully deteled the article');
+        res.send('Succesfully deteled the team');
       }
     });
   });
@@ -146,35 +146,17 @@ app
   });
 
 app
-  .route('teams/:teamId/tasks/taskId')
+  .route('/teams/:teamId/tasks/:taskId')
   .get((req, res) => {
     Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
       if (err) {
         res.send(err);
       } else {
         res.json(
-          foundTeam.tasks.find((task) => task._id === req.params.taskId)
+          foundTeam.tasks.find((task) => String(task._id) === req.params.taskId)
         );
       }
     });
-  })
-  .patch(async (req, res) => {
-    const changes = req.body;
-    try {
-      const team = await Team.findOneAndUpdate(
-        { _id: req.params.teamId },
-        { $set: { tasks: { $set: changes } } }
-      ).exec();
-      const { members } = team;
-      const membersId = members.map((member) => member.id);
-      await User.updateMany(
-        { _id: membersId },
-        { $set: { tasks: { $set: changes } } }
-      ).exec();
-      res.send('Sucessfully updated the task');
-    } catch (err) {
-      res.send(err);
-    }
   })
   .delete(async (req, res) => {
     try {
@@ -217,46 +199,55 @@ app
         { $push: { members: newMember } },
         { new: true }
       ).exec();
-      const { newTasks } = team;
+      const { tasks: newTasks, name: teamName } = team;
       await User.updateOne(
         { _id: id },
-        { $push: { tasks: { $each: newTasks } } }
+        {
+          $push: {
+            tasks: { $each: newTasks },
+            teams: { id: req.params.teamId, name: teamName },
+          },
+        }
       ).exec();
-      res.send('Sucessfully added user');
+      res.send('Sucessfully added member');
     } catch (err) {
       res.send(err);
     }
   });
 
 app
-  .route('/teams/:teamId/members/memberId')
+  .route('/teams/:teamId/members/:memberId')
   .get((req, res) => {
-    Team.find((err, foundTeams) => {
+    Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
       if (err) {
         res.send(err);
       } else {
         res.json(
-          foundTeams.member.find((member) => member._id === req.params.memberId)
+          foundTeam.members.find(
+            (member) => String(member.id) === req.params.memberId
+          )
         );
       }
     });
   })
   .delete(async (req, res) => {
     try {
-      await Team.findOneAndUpdate(
+      const team = await Team.findOneAndUpdate(
         { _id: req.params.teamId },
-        { $pull: { members: { _id: req.params.memberId } } }
+        { $pull: { members: { id: req.params.memberId } } }
       ).exec();
-
+      const { tasks } = team;
+      const tasksId = tasks.map((task) => task.id);
       await User.updateOne(
         { _id: req.params.memberId },
-        { $pull: { teams: { _id: req.params.teamId } } }
+        { $pull: { teams: { id: req.params.teamId }, tasks: { _id: tasksId } } }
       ).exec();
       res.send('Sucessfully removed the member');
     } catch (err) {
       res.send(err);
     }
   });
+
 app
   .route('/users')
   // Returns all users
@@ -358,23 +349,11 @@ app
       if (err) {
         res.send(err);
       } else {
-        res.json(foundUser.task.find((task) => task._id === req.params.taskId));
+        res.json(
+          foundUser.tasks.find((task) => String(task._id) === req.params.taskId)
+        );
       }
     });
-  })
-  .patch((req, res) => {
-    const changes = req.body;
-    User.updateOne(
-      { _id: req.params.userId },
-      { $set: { tasks: { $set: changes } } },
-      (err) => {
-        if (err) {
-          res.send(err);
-        } else {
-          res.send('Sucessfully edited the task');
-        }
-      }
-    );
   })
   .delete((req, res) => {
     User.updateOne(
