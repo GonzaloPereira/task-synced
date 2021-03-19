@@ -1,5 +1,13 @@
+// jshint esversion:6
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const passport = require('passport');
+const passportLocalMongoose = require('passport-local-mongoose');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+const findOrCreate = require('mongoose-find-or-create');
 
 const app = express();
 
@@ -10,8 +18,19 @@ const port = 3080;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(
+  session({
+    secret: 'Secret',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
 const url = 'mongodb://localhost:27017/TaskSyncedDB';
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.set('useCreateIndex', true);
 
 // Schemas and Models
 
@@ -36,23 +55,68 @@ const userSchema = new mongoose.Schema({
   tasks: [taskSchema],
   teams: [{ id: String, name: String }],
 });
+
+userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
+
 const User = mongoose.model('User', userSchema);
 
-// Inserting an example team
-const myTeam = new Team({
-  name: 'Los snickers',
-  members: [
-    { id: 1, name: 'gonzalote' },
-    { id: 2, name: 'El vinces' },
-  ],
-  tasks: [
-    {
-      name: 'first task',
-      description: 'La descripcion mas unica que te inventes',
-      date: new Date(),
-    },
-  ],
+passport.use(User.createStrategy());
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
 });
+
+passport.deserializeUser((id, done) => {
+  User.findById(id, (err, user) => {
+    done(err, user);
+  });
+});
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: 'http://localhost:3000/auth/google/secrets',
+      userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
+    },
+    (accessToken, refreshToken, profile, cb) => {
+      console.log(profile);
+      User.findOrCreate({ googleId: profile.id }, (err, user) => cb(err, user));
+    }
+  )
+);
+
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: process.env.FACEBOOK_APP_ID,
+      clientSecret: process.env.FACEBOOK_APP_SECRET,
+      callbackURL: 'http://localhost:3000/auth/facebook/secrets',
+    },
+    (accessToken, refreshToken, profile, cb) => {
+      User.findOrCreate({ facebookId: profile.id }, (err, user) =>
+        cb(err, user)
+      );
+    }
+  )
+);
+// Inserting an example team
+// const myTeam = new Team({
+//   name: 'Los snickers',
+//   members: [
+//     { id: 1, name: 'gonzalote' },
+//     { id: 2, name: 'El vinces' },
+//   ],
+//   tasks: [
+//     {
+//       name: 'first task',
+//       description: 'La descripcion mas unica que te inventes',
+//       date: new Date(),
+//     },
+//   ],
+// });
 // myTeam.save();
 
 app

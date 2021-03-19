@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
+import { Switch, useRouteMatch, Redirect } from 'react-router-dom';
+import PrivateRoute from '../Routes/PrivateRoute';
 import './App.css';
 import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import Schedule from '../Schedule/Schedule';
 import Teams from '../Teams/Teams';
+import Profile from '../Profile/Profile';
 
 function App() {
-  const [showSchedule, setShowSchedule] = useState(true);
-  const [showTeams, setShowTeams] = useState(false);
-
+  const { path } = useRouteMatch();
   return (
     <main>
-      <Header
-        scheduleOn={() => {
-          setShowSchedule(true);
-          setShowTeams(false);
-        }}
-        teamsOn={() => {
-          setShowSchedule(false);
-          setShowTeams(true);
-        }}
-      />
+      <Header />
       <div className="content-container">
-        {showSchedule && <Schedule />}
-        {showTeams && <Teams />}
+        <Switch>
+          <PrivateRoute path={path} exact>
+            <Redirect to={`${path}/schedule`} />
+          </PrivateRoute>
+          <PrivateRoute path={`${path}/schedule`} component={Schedule} exact />
+          <PrivateRoute path={`${path}/teams`} component={Teams} exact />
+          <PrivateRoute path={`${path}/profile`} component={Profile} exact />
+        </Switch>
       </div>
       <Footer />
     </main>

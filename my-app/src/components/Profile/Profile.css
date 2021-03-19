@@ -1,0 +1,12 @@
+.profile {
+  width: 60%;
+  margin: auto;
+}
+.profile h2 {
+  font-size: 2rem;
+  text-align: center;
+}
+.profile-pic {
+  text-align: center;
+  font-size: 5rem;
+}

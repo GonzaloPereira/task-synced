@@ -1,0 +1,26 @@
+.not-container {
+  position: absolute;
+  top: 70px;
+  right: 10px;
+  width: 190px;
+  padding: 1% 2%;
+  background-color: #393e46;
+  color: white;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+.notification:first-child {
+  margin-top: 10px;
+}
+.notification {
+  font-size: 1rem;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 1rem;
+}
+.notification p {
+  margin: 0;
+  margin-left: 5px;
+}
