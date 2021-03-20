@@ -7,8 +7,11 @@ function TeamNav({ teams, selectTeam }) {
   return (
     <div className="team-nav">
       <TeamTitle />
-      {teams.map((team) => (
-        <TeamLink key={team.name} name={team.name} selectTeam={selectTeam} />
+      {teams.map((team, idx) => (
+        <>
+          {idx !== 0 && <hr className="separator-lines" />}
+          <TeamLink key={team.name} name={team.name} selectTeam={selectTeam} />
+        </>
       ))}
     </div>
   );

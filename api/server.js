@@ -50,7 +50,7 @@ const Team = mongoose.model('Team', teamSchema);
 
 const userSchema = new mongoose.Schema({
   name: String,
-  email: String,
+  username: String,
   password: String,
   tasks: [taskSchema],
   teams: [{ id: String, name: String }],
@@ -72,36 +72,48 @@ passport.deserializeUser((id, done) => {
     done(err, user);
   });
 });
+// Authentication code
+app.get('/api/isAuthenticated', (req, res, next) => {
+  if (req.isAuthenticated()) {
+    res.json(req.user);
+  } else {
+    res.send('{}');
+  }
+});
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: 'http://localhost:3000/auth/google/secrets',
-      userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
-    },
-    (accessToken, refreshToken, profile, cb) => {
-      console.log(profile);
-      User.findOrCreate({ googleId: profile.id }, (err, user) => cb(err, user));
-    }
-  )
-);
+app.get('/api/logout', (req, res) => {
+  req.logout();
+  res.send('Sucessfully logout');
+});
 
-passport.use(
-  new FacebookStrategy(
-    {
-      clientID: process.env.FACEBOOK_APP_ID,
-      clientSecret: process.env.FACEBOOK_APP_SECRET,
-      callbackURL: 'http://localhost:3000/auth/facebook/secrets',
-    },
-    (accessToken, refreshToken, profile, cb) => {
-      User.findOrCreate({ facebookId: profile.id }, (err, user) =>
-        cb(err, user)
-      );
+app.post('/api/register', (req, res, next) => {
+  User.register({ username: req.body.username }, req.body.password, (err) => {
+    if (err) {
+      next(err);
+    } else {
+      passport.authenticate('local')(req, res, () => {
+        res.send('Sucessfully registered user');
+      });
     }
-  )
-);
+  });
+});
+
+app.post('/api/login', (req, res, next) => {
+  const user = new User({
+    username: req.body.email,
+    password: req.body.password,
+  });
+  req.login(user, (err) => {
+    if (err) {
+      next(err);
+    } else {
+      passport.authenticate('local')(req, res, () => {
+        res.send('Succesfully logged user');
+      });
+    }
+  });
+});
+
 // Inserting an example team
 // const myTeam = new Team({
 //   name: 'Los snickers',
@@ -120,7 +132,7 @@ passport.use(
 // myTeam.save();
 
 app
-  .route('/teams')
+  .route('/api/teams')
   // Return all teams
   .get((req, res) => {
     Team.find((err, foundTeams) => {
@@ -149,7 +161,7 @@ app
   });
 
 app
-  .route('/teams/:teamId')
+  .route('/api/teams/:teamId')
   // Return a team
   .get((req, res) => {
     Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
@@ -172,7 +184,7 @@ app
   });
 
 app
-  .route('/teams/:teamId/tasks')
+  .route('/api/teams/:teamId/tasks')
   // Returns all tasks of a team
   .get((req, res) => {
     Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
@@ -210,7 +222,7 @@ app
   });
 
 app
-  .route('/teams/:teamId/tasks/:taskId')
+  .route('/api/teams/:teamId/tasks/:taskId')
   .get((req, res) => {
     Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
       if (err) {
@@ -241,7 +253,7 @@ app
   });
 
 app
-  .route('/teams/:teamId/members')
+  .route('/api/teams/:teamId/members')
   .get((req, res) => {
     Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
       if (err) {
@@ -280,7 +292,7 @@ app
   });
 
 app
-  .route('/teams/:teamId/members/:memberId')
+  .route('/api/teams/:teamId/members/:memberId')
   .get((req, res) => {
     Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
       if (err) {
@@ -313,7 +325,7 @@ app
   });
 
 app
-  .route('/users')
+  .route('/api/users')
   // Returns all users
   .get((req, res) => {
     User.find((err, foundUsers) => {
@@ -343,7 +355,7 @@ app
   });
 
 app
-  .route('/users/:userId')
+  .route('/api/users/:userId')
   // Returns user
   .get((req, res) => {
     User.findOne({ _id: req.params.userId }, (err, foundUser) => {
@@ -377,7 +389,7 @@ app
   });
 
 app
-  .route('/users/:userId/tasks')
+  .route('/api/users/:userId/tasks')
   .get((req, res) => {
     User.findOne({ _id: req.params.userId }, (err, foundUser) => {
       if (err) {
@@ -407,7 +419,7 @@ app
     );
   });
 app
-  .route('/users/:userId/tasks/:taskId')
+  .route('/api/users/:userId/tasks/:taskId')
   .get((req, res) => {
     User.findOne({ _id: req.params.userId }, (err, foundUser) => {
       if (err) {

@@ -68,6 +68,13 @@
 .team-icon {
   margin-right: 5px;
 }
+.separator-lines {
+  border: none;
+  border-top: 1px solid #222831;
+  margin: 0 auto;
+  width: 80%;
+  height: 0;
+}
 /* Team Description */
 .team-desc {
   padding-left: 3%;
