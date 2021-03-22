@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 export default function Join() {
   return (
-    <div className="join auth">
+    <div className="join form">
       <h1>Join the community!</h1>
       <Link to="/login" style={{ textDecoration: 'none' }}>
         <button type="button">Log In</button>

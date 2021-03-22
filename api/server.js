@@ -43,6 +43,7 @@ const Task = mongoose.model('Task', taskSchema);
 
 const teamSchema = new mongoose.Schema({
   name: String,
+  description: String,
   members: [{ id: String, name: String }],
   tasks: [taskSchema],
 });
@@ -87,15 +88,19 @@ app.get('/api/logout', (req, res) => {
 });
 
 app.post('/api/register', (req, res, next) => {
-  User.register({ username: req.body.username }, req.body.password, (err) => {
-    if (err) {
-      next(err);
-    } else {
-      passport.authenticate('local')(req, res, () => {
-        res.send('Sucessfully registered user');
-      });
+  User.register(
+    { username: req.body.username, name: req.body.name },
+    req.body.password,
+    (err) => {
+      if (err) {
+        next(err);
+      } else {
+        passport.authenticate('local')(req, res, () => {
+          res.send('Sucessfully registered user');
+        });
+      }
     }
-  });
+  );
 });
 
 app.post('/api/login', (req, res, next) => {
@@ -144,20 +149,15 @@ app
     });
   })
   // Creates a team
-  .post((req, res) => {
-    const { name, members, tasks } = req.body;
+  .post(async (req, res) => {
+    const { name, description, members, tasks } = req.body;
     const team = new Team({
       name: name,
+      description: description,
       members: members,
       tasks: tasks,
     });
-    team.save((err) => {
-      if (err) {
-        res.send(err);
-      } else {
-        res.send('New team created');
-      }
-    });
+    res.send(await team.save());
   });
 
 app

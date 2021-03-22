@@ -1,16 +1,18 @@
 import React from 'react';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
-function TeamLink({ name, selectTeam }) {
+function TeamLink({ team, selectTeam }) {
   return (
     <div
       className="team-link"
       onClick={() => {
-        selectTeam(name);
+        selectTeam(team.id);
       }}
     >
       <AccountCircleIcon className="team-icon" />
-      <h4>{name}</h4>
+      <h4>
+        {team.name.substring(0, 18) + (team.name.length > 18 ? '...' : '')}
+      </h4>
     </div>
   );
 }

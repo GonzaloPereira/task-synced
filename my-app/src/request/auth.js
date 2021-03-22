@@ -1,10 +1,10 @@
-export async function createUserWithEmailAndPassword(email, password) {
+export async function createUserWithEmailAndPassword(email, password, name) {
   const data = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ username: email, password }),
+    body: JSON.stringify({ username: email, password, name }),
   };
   return fetch('/api/register', data);
 }

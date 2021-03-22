@@ -15,24 +15,37 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
-  const mounted = useRef(true);
+  const mounted = useRef(false);
 
-  function signup(email, password) {
-    return createUserWithEmailAndPassword(email, password);
-  }
-
-  function login(email, password) {
-    return loginInWithEmailAndPassword(email, password);
-  }
-
-  function logout() {
-    return logOut();
-  }
   async function refreshUser() {
     const user = await getUser();
     setCurrentUser(user);
     setLoading(false);
   }
+
+  function signup(email, password, name) {
+    return createUserWithEmailAndPassword(email, password, name).then(() =>
+      refreshUser(),
+    );
+  }
+
+  function login(email, password) {
+    return loginInWithEmailAndPassword(email, password).then(() =>
+      refreshUser(),
+    );
+  }
+
+  function logout() {
+    return logOut().then(() => refreshUser());
+  }
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  });
+
   // Get current user (Get the state of the user, if it is login or not)
   useEffect(async () => {
     if (mounted.current) {
@@ -41,7 +54,6 @@ export function AuthProvider({ children }) {
     // logout when component is unmounted
     function unsubscribe() {
       setCurrentUser(null);
-      mounted.current = false;
     }
     return unsubscribe;
   }, []);

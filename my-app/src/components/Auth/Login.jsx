@@ -1,16 +1,18 @@
 /* eslint-disable react/jsx-curly-brace-presence */
 import './Auth.css';
 import React, { useRef, useState, useEffect } from 'react';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Alert from '@material-ui/lab/Alert';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
   const email = useRef();
   const password = useRef();
-  const { login, refreshUser } = useAuth();
+  const { login } = useAuth();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const mounted = useRef();
+  const mounted = useRef(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -18,8 +20,8 @@ export default function Login() {
     try {
       setError('');
       setLoading(true);
-      await login(email.current.value, password.current.value);
-      await refreshUser();
+      const res = await login(email.current.value, password.current.value);
+      if (!res.ok) throw new Error();
     } catch {
       setError('Failed to log in');
     }
@@ -28,14 +30,14 @@ export default function Login() {
     }
   }
   useEffect(() => {
-    function unmount() {
+    mounted.current = true;
+    return () => {
       mounted.current = false;
-    }
-    return unmount;
-  }, []);
+    };
+  });
+
   return (
-    <div className="auth">
-      {loading && <h2>Is loading...</h2>}
+    <div className="form">
       <h2>Log In</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">
@@ -54,7 +56,8 @@ export default function Login() {
           </Link>
         </p>
       </form>
-      {error && <p>An error happened!!{error}</p>}
+      {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
+      {error && <Alert severity="error">Failed to login!</Alert>}
     </div>
   );
 }

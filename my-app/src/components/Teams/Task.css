@@ -1,0 +1,63 @@
+.tasks-container {
+  background-color: #222831;
+  border-radius: 5px 5px 5px 0px;
+  color: white;
+  width: 95%;
+}
+.task {
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: 50px 5fr 50px 1fr 50px 50px;
+  grid-template-rows: 2.5rem auto;
+}
+.task > * {
+  align-self: center;
+  justify-self: center;
+}
+.task h4 {
+  justify-self: left;
+}
+.task-button:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+.task-description {
+  background-color: #393e46;
+  border-radius: 5px;
+  grid-column-start: 1;
+  grid-column-end: 7;
+  min-height: 2rem;
+  width: 100%;
+  padding: 2% 4%;
+  padding-left: 50px;
+  text-align: justify;
+  box-sizing: border-box;
+}
+.tasks-separator-line {
+  border: none;
+  border-top: 2px solid #393e46;
+  margin: 0 auto;
+  width: 100%;
+  height: 0;
+}
+.add-task {
+  background-color: #222831;
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  grid-template-rows: 2rem;
+  width: 15%;
+  border-radius: 0px 0px 5px 5px;
+}
+
+.add-task > * {
+  align-self: center;
+  justify-self: center;
+}
+.add-task > *:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+.add-task h5 {
+  justify-self: left;
+  color: white;
+}

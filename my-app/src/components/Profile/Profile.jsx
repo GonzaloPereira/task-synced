@@ -4,8 +4,11 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Profile() {
-  const { logout } = useAuth();
-  function handleLogout() {}
+  const { logout, currentUser } = useAuth();
+  const { name, username: email } = currentUser;
+  function handleLogout() {
+    logout();
+  }
   return (
     <div className="profile">
       <h2>My Profile</h2>
@@ -13,9 +16,9 @@ export default function Profile() {
         <AccountCircleIcon fontSize="inherit" />
       </div>
       <h3>Name</h3>
-      <p>Gonzalo Pereira</p>
+      <p>{name}</p>
       <h3>Email</h3>
-      <p>gonzaloapr45@gmail.com</p>
+      <p>{email}</p>
       <button className="logout-button" type="button" onClick={handleLogout}>
         Log out
       </button>

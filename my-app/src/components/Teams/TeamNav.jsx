@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer } from 'react';
 import './Teams.css';
 import TeamTitle from './TeamTitle';
 import TeamLink from './TeamLink';
@@ -8,10 +8,10 @@ function TeamNav({ teams, selectTeam }) {
     <div className="team-nav">
       <TeamTitle />
       {teams.map((team, idx) => (
-        <>
-          {idx !== 0 && <hr className="separator-lines" />}
-          <TeamLink key={team.name} name={team.name} selectTeam={selectTeam} />
-        </>
+        <div key={team.id}>
+          {idx !== 0 && <hr className="teams-separator-line" />}
+          <TeamLink team={team} selectTeam={selectTeam} />
+        </div>
       ))}
     </div>
   );

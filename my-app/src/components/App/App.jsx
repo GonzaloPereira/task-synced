@@ -19,7 +19,7 @@ function App() {
             <Redirect to={`${path}/schedule`} />
           </PrivateRoute>
           <PrivateRoute path={`${path}/schedule`} component={Schedule} exact />
-          <PrivateRoute path={`${path}/teams`} component={Teams} exact />
+          <PrivateRoute path={`${path}/teams`} component={Teams} />
           <PrivateRoute path={`${path}/profile`} component={Profile} exact />
         </Switch>
       </div>
