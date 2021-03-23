@@ -3,7 +3,7 @@ import './Notification.css';
 import Notification from './Notification';
 
 export default function Notifications() {
-  const nots = ['A new task for Team 1', 'A new task for Team 2'];
+  const nots = ['Feature coming soon'];
 
   return (
     <div className="not-container">

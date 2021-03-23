@@ -1,9 +1,9 @@
 import React, { useState, useReducer, useRef, useEffect } from 'react';
-import CloseIcon from '@material-ui/icons/Close';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import { createTeam } from '../../request/teams';
 import { useAuth } from '../contexts/AuthContext';
+import Popup from '../extra/Popup';
 
 function formReducer(state, event) {
   return {
@@ -30,6 +30,7 @@ export default function CreateTeam({ close }) {
       await close();
       await refreshUser();
     } catch (err) {
+      console.log(err);
       setError("Couldn't create team");
     }
     if (mounted.current) {
@@ -49,39 +50,35 @@ export default function CreateTeam({ close }) {
     });
   }
   return (
-    <div className="popup-out" onClick={close}>
-      <div className="popup-in form" onClick={(e) => e.stopPropagation()}>
-        <CloseIcon className="popup-close-icon" onClick={close} />
+    <Popup close={close}>
+      <h2>Create new Team</h2>
 
-        <h2>Create a new Team!</h2>
-
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="name">
-            <p>Name</p>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name || ''}
-              onChange={handleChange}
-            />
-          </label>
-          <label htmlFor="description">
-            <p>Description</p>
-            <textarea
-              type="text"
-              id="description"
-              name="description"
-              value={formData.description || ''}
-              onChange={handleChange}
-            />
-          </label>
-          <button type="submit">Create</button>
-        </form>
-        <br />
-        {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
-        {error && <Alert severity="error">Failed to create a new team!</Alert>}
-      </div>
-    </div>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="name">
+          <p>Name</p>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name || ''}
+            onChange={handleChange}
+          />
+        </label>
+        <label htmlFor="description">
+          <p>Description</p>
+          <textarea
+            type="text"
+            id="description"
+            name="description"
+            value={formData.description || ''}
+            onChange={handleChange}
+          />
+        </label>
+        <button type="submit">Create</button>
+      </form>
+      <br />
+      {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
+      {error && <Alert severity="error">Failed to create a new team!</Alert>}
+    </Popup>
   );
 }

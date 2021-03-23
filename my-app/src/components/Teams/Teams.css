@@ -87,3 +87,15 @@
   padding-left: 3%;
   flex-grow: 1;
 }
+.team-description {
+  color: white;
+  background-color: #222831;
+  width: 95%;
+  border-radius: 5px;
+  box-sizing: border-box;
+  padding: 1rem 1rem;
+  word-break: break-all;
+}
+.team-description p {
+  margin: 0;
+}

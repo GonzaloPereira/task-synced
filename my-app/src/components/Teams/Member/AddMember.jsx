@@ -2,9 +2,9 @@
 import React, { useState, useReducer, useRef, useEffect } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
-import { addMember } from '../../request/teams';
-import { useAuth } from '../contexts/AuthContext';
-import Popup from '../extra/Popup';
+import { getUserWithId } from '../../../request/auth';
+import { addMember } from '../../../request/teams';
+import Popup from '../../extra/Popup';
 
 function formReducer(state, event) {
   return {
@@ -12,11 +12,10 @@ function formReducer(state, event) {
     [event.name]: event.value,
   };
 }
-export default function JoinTeam({ close }) {
+export default function AddTask({ close, currTeam, refreshTeam }) {
   const [formData, setFormData] = useReducer(formReducer, {});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { currentUser, refreshUser } = useAuth();
   const mounted = useRef(false);
 
   async function handleSubmit(event) {
@@ -25,13 +24,15 @@ export default function JoinTeam({ close }) {
     try {
       setError('');
       setLoading(true);
-      // join team
-      const res = await addMember(formData.teamId, currentUser);
+      // Add member to team with id == TeamId
+      const userToAdd = await getUserWithId(formData.id);
+      const res = await addMember(currTeam._id, userToAdd);
       if (!res.ok) throw new Error();
       await close();
-      await refreshUser();
+      await refreshTeam();
     } catch (err) {
-      setError("Couldn't join team");
+      console.log(err);
+      setError("Couldn't create team");
     }
     if (mounted.current) {
       setLoading(false);
@@ -51,24 +52,27 @@ export default function JoinTeam({ close }) {
   }
   return (
     <Popup close={close}>
-      <h2>Join a Team</h2>
+      <h2>Add new member</h2>
 
       <form onSubmit={handleSubmit}>
-        <label htmlFor="teamId">
-          <p>{"Team's ID"}</p>
+        <label htmlFor="id">
+          <p>{"Add member with User's ID"}</p>
           <input
             type="text"
-            id="teamId"
-            name="teamId"
-            value={formData.teamId || ''}
+            id="id"
+            name="id"
+            value={formData.id || ''}
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Join</button>
+        <button type="submit">Add member</button>
+        <p>{"Or send him this team's ID"}</p>
+        <div className="add-member-team-id">{currTeam._id}</div>
       </form>
+
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
-      {error && <Alert severity="error">Failed to join the team!</Alert>}
+      {error && <Alert severity="error">Failed to add new member!</Alert>}
     </Popup>
   );
 }

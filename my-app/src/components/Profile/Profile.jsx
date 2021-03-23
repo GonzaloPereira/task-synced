@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function Profile() {
   const { logout, currentUser } = useAuth();
-  const { name, username: email } = currentUser;
+  const { name, username: email, _id: ID } = currentUser;
   function handleLogout() {
     logout();
   }
@@ -19,6 +19,8 @@ export default function Profile() {
       <p>{name}</p>
       <h3>Email</h3>
       <p>{email}</p>
+      <h3>User ID</h3>
+      <p>{ID}</p>
       <button className="logout-button" type="button" onClick={handleLogout}>
         Log out
       </button>

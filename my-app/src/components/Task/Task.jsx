@@ -9,8 +9,8 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CloseIcon from '@material-ui/icons/Close';
 
-export default function Task({ task }) {
-  const { name, description, date } = task;
+export default function Task({ task, editable, deleteTask }) {
+  const { _id: taskId, name, description, date } = task;
   const [dropDescrip, setDropDescrip] = useReducer((st) => !st, false);
   const [showArrow, setShowArrow] = useState(false);
   const [isDone, toggleIsDone] = useReducer((st) => !st, false);
@@ -30,37 +30,44 @@ export default function Task({ task }) {
       )}
       <h4>{name}</h4>
       <CalendarTodayIcon />
-      <h5>{date}</h5>
-      {!isDone ? (
-        <CheckIcon
-          className="task-button"
-          onMouseOver={(e) => e.stopPropagation()}
-          onMouseOut={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleIsDone();
-          }}
-          style={{ color: '00adb5' }}
-        />
-      ) : (
-        <CloseIcon
-          className="task-button"
-          onMouseOver={(e) => e.stopPropagation()}
-          onMouseOut={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleIsDone();
-          }}
-          style={{ color: 'e84545' }}
-        />
+      <h5>{date.substring(0, 10)}</h5>
+      {editable && (
+        <>
+          {!isDone ? (
+            <CheckIcon
+              className="task-button"
+              onMouseOver={(e) => e.stopPropagation()}
+              onMouseOut={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleIsDone();
+              }}
+              style={{ color: '00adb5' }}
+            />
+          ) : (
+            <CloseIcon
+              className="task-button"
+              onMouseOver={(e) => e.stopPropagation()}
+              onMouseOut={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleIsDone();
+              }}
+              style={{ color: 'e84545' }}
+            />
+          )}
+          <DeleteIcon
+            className="task-button"
+            onMouseOver={(e) => e.stopPropagation()}
+            onMouseOut={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteTask(taskId);
+            }}
+            style={{ color: 'e84545' }}
+          />
+        </>
       )}
-      <DeleteIcon
-        className="task-button"
-        onMouseOver={(e) => e.stopPropagation()}
-        onMouseOut={(e) => e.stopPropagation()}
-        onClick={(e) => e.stopPropagation()}
-        style={{ color: 'e84545' }}
-      />
       {dropDescrip && <div className="task-description">{description}</div>}
     </div>
   );

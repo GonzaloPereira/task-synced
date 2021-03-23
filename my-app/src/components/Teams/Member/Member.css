@@ -1,0 +1,52 @@
+.members-container {
+  background-color: #222831;
+  border-radius: 5px 5px 5px 0px;
+  color: white;
+  width: 95%;
+}
+.member {
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: 50px 1fr 50px;
+  grid-template-rows: 2.5rem;
+}
+.member > * {
+  align-self: center;
+  justify-self: center;
+}
+.member h4 {
+  justify-self: left;
+}
+.member-button:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+.add-member {
+  background-color: #222831;
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  grid-template-rows: 2.2rem;
+  width: 12rem;
+  border-radius: 0px 0px 5px 5px;
+  margin-bottom: 50px;
+}
+
+.add-member > * {
+  align-self: center;
+  justify-self: center;
+}
+.add-member > *:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+.add-member h5 {
+  justify-self: left;
+  color: white;
+}
+.add-member-team-id {
+  border-radius: 5px;
+  background-color: #222831;
+  color: white;
+  padding: 2% 4%;
+  text-align: center;
+}

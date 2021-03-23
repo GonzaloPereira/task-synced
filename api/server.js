@@ -8,7 +8,7 @@ const passportLocalMongoose = require('passport-local-mongoose');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const findOrCreate = require('mongoose-find-or-create');
-
+const path = require('path');
 const app = express();
 
 const port = 3080;
@@ -17,7 +17,7 @@ const port = 3080;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
+app.use(express.static(path.join(__dirname, '../my-app/build')));
 app.use(
   session({
     secret: 'Secret',
@@ -28,7 +28,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const url = 'mongodb://localhost:27017/TaskSyncedDB';
+// const url = 'mongodb://localhost:27017/TaskSyncedDB';
+const url =
+  'mongodb+srv://admin-gonzalo:micontra123@gettingstarted.ru2tp.mongodb.net/tasksyncedDB?retryWrites=true&w=majority';
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set('useCreateIndex', true);
 
@@ -446,7 +448,7 @@ app
   });
 
 app.get('/', (req, res) => {
-  res.send('App Works !!!!');
+  res.sendFile(path.join(__dirname, '../my-app/build/index.html'));
 });
 
 app.listen(port, () => {

@@ -16,34 +16,3 @@ code {
 .material-ui-link {
   text-decoration: none;
 }
-.popup-out {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity */
-}
-.popup-in {
-  position: relative;
-  background-color: #eeeeee;
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px;
-  border: 1px solid #888;
-  width: 50%; /* Could be more or less, depending on screen size */
-  color: black;
-}
-.popup-close-icon {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-  color: #00adb5;
-}
-.popup-close-icon:hover,
-.popup-close-icon:focus {
-  opacity: 0.5;
-  text-decoration: none;
-  cursor: pointer;
-}

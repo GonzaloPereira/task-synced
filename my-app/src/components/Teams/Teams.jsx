@@ -23,7 +23,7 @@ function Teams() {
   return (
     <div className="teams-container">
       <TeamNav teams={teams} selectTeam={selectTeam} />
-      <TeamDescription currTeam={currTeam} />
+      <TeamDescription currTeam={currTeam} selectTeam={selectTeam} />
     </div>
   );
 }

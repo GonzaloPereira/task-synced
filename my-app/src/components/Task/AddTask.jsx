@@ -1,10 +1,9 @@
-/* eslint-disable react/jsx-curly-brace-presence */
 import React, { useState, useReducer, useRef, useEffect } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
-import { addMember } from '../../request/teams';
-import { useAuth } from '../contexts/AuthContext';
+import { createTaskForTeam } from '../../request/teams';
 import Popup from '../extra/Popup';
+import { useAuth } from '../contexts/AuthContext';
 
 function formReducer(state, event) {
   return {
@@ -12,11 +11,11 @@ function formReducer(state, event) {
     [event.name]: event.value,
   };
 }
-export default function JoinTeam({ close }) {
+export default function AddTask({ close, currTeam, refreshTeam }) {
   const [formData, setFormData] = useReducer(formReducer, {});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { currentUser, refreshUser } = useAuth();
+  const { refreshUser } = useAuth();
   const mounted = useRef(false);
 
   async function handleSubmit(event) {
@@ -25,13 +24,14 @@ export default function JoinTeam({ close }) {
     try {
       setError('');
       setLoading(true);
-      // join team
-      const res = await addMember(formData.teamId, currentUser);
+      // create task and give teamId
+      const res = await createTaskForTeam(currTeam._id, formData);
       if (!res.ok) throw new Error();
       await close();
       await refreshUser();
+      await refreshTeam();
     } catch (err) {
-      setError("Couldn't join team");
+      setError("Couldn't create team");
     }
     if (mounted.current) {
       setLoading(false);
@@ -51,24 +51,46 @@ export default function JoinTeam({ close }) {
   }
   return (
     <Popup close={close}>
-      <h2>Join a Team</h2>
+      <h2>Create new Task</h2>
 
       <form onSubmit={handleSubmit}>
-        <label htmlFor="teamId">
-          <p>{"Team's ID"}</p>
+        <label htmlFor="name">
+          <p>Name</p>
           <input
             type="text"
-            id="teamId"
-            name="teamId"
-            value={formData.teamId || ''}
+            id="name"
+            name="name"
+            value={formData.name || ''}
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Join</button>
+        <label htmlFor="description">
+          <p>Description</p>
+          <textarea
+            type="text"
+            id="description"
+            name="description"
+            value={formData.description || ''}
+            onChange={handleChange}
+          />
+        </label>
+        <label htmlFor="date">
+          <p>Expected date</p>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date || ''}
+            onChange={handleChange}
+            min="2020-01-01"
+            max="2022-01-01"
+          />
+        </label>
+        <button type="submit">Add task</button>
       </form>
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
-      {error && <Alert severity="error">Failed to join the team!</Alert>}
+      {error && <Alert severity="error">Failed to create a new team!</Alert>}
     </Popup>
   );
 }

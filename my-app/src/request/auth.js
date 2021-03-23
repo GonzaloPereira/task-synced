@@ -27,3 +27,7 @@ export async function logOut() {
 export async function getUser() {
   return fetch('/api/isAuthenticated').then((res) => res.json());
 }
+
+export async function getUserWithId(userId) {
+  return fetch(`/api/users/${userId}`).then((res) => res.json());
+}
