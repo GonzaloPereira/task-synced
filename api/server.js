@@ -9,9 +9,10 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const findOrCreate = require('mongoose-find-or-create');
 const path = require('path');
+
 const app = express();
 
-const port = 3080;
+const port = 3080 || process.env.PORT;
 
 // place holder for the data
 
