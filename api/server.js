@@ -12,13 +12,11 @@ const path = require('path');
 
 const app = express();
 
-const port = 3080 || process.env.PORT;
-
 // place holder for the data
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../my-app/build')));
+app.use(express.static(path.join(__dirname, 'build')));
 app.use(
   session({
     secret: 'Secret',
@@ -449,9 +447,9 @@ app
   });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../my-app/build/index.html'));
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on the port::${port}`);
+app.listen(process.env.PORT || 3080, () => {
+  console.log(`Server running`);
 });
