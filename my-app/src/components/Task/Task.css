@@ -8,7 +8,8 @@
   border-radius: 5px;
   display: grid;
   grid-template-columns: 50px 5fr 50px 1fr 50px 50px;
-  grid-template-rows: 2.5rem auto;
+  grid-template-rows: minmax(2.5rem, auto) auto;
+  word-break: break-all;
 }
 .task > * {
   align-self: center;

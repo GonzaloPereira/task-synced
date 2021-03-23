@@ -30,7 +30,7 @@ export default function Task({ task, editable, deleteTask }) {
       )}
       <h4>{name}</h4>
       <CalendarTodayIcon />
-      <h5>{date.substring(0, 10)}</h5>
+      <h5>{date ? date.substring(0, 10) : ''}</h5>
       {editable && (
         <>
           {!isDone ? (
