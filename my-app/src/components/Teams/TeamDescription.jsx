@@ -1,21 +1,13 @@
 import React, { useState, useReducer } from 'react';
 import './Teams.css';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
 import TaskContainer from '../Task/TaskContainer';
-import Task from '../Task/Task';
 import AddTask from '../Task/AddTask';
 import MembersContainer from './Member/MembersContainer';
 import AddMember from './Member/AddMember';
 import useWindowDimensions from '../extra/WindowDimensions';
 
-function TeamDescription({
-  currTeam,
-  resetTeams,
-  selectTeam,
-  style,
-  showBackArrow,
-}) {
+function TeamDescription({ currTeam, resetTeams, selectTeam, style }) {
   if (!currTeam)
     return (
       <div className="team-content" style={style}>
@@ -31,9 +23,6 @@ function TeamDescription({
   }
   return (
     <div className="team-content" style={style}>
-      {showBackArrow && (
-        <ArrowBackRoundedIcon className="back-icon" onClick={resetTeams} />
-      )}
       <h3>{name}</h3>
       <div className="team-description">
         <p>{description}</p>

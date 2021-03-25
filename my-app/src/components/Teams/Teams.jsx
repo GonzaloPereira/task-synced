@@ -73,7 +73,6 @@ function Teams() {
         currTeam={currTeam}
         selectTeam={selectTeam}
         style={responsiveStyleDesc}
-        showBackArrow={width <= 700}
         resetTeams={() => {
           setCurrTeam('');
         }}
