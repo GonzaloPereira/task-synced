@@ -2,6 +2,8 @@
   width: 60%;
   margin: auto;
   margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
 }
 .profile h2 {
   font-size: 2rem;
@@ -15,11 +17,10 @@
   background-color: #00adb5;
   border: none;
   color: white;
+  min-width: 100px;
   width: 20%;
   height: 2rem;
   border-radius: 8px;
   text-align: center;
   margin: 1rem auto;
-  margin-left: auto;
-  margin-right: auto;
 }

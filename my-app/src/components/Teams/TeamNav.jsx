@@ -3,9 +3,9 @@ import './Teams.css';
 import TeamTitle from './TeamTitle';
 import TeamLink from './TeamLink';
 
-function TeamNav({ teams, selectTeam }) {
+function TeamNav({ teams, selectTeam, style }) {
   return (
-    <div className="team-nav">
+    <div className="team-nav" style={style}>
       <TeamTitle />
       {teams.map((team, idx) => (
         <div key={team.id}>

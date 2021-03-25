@@ -7,6 +7,7 @@
   height: 100vh;
   background-color: rgb(0, 0, 0); /* Fallback color */
   background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity */
+  overflow: auto;
 }
 .popup-in {
   position: relative;
@@ -16,7 +17,7 @@
   position: absolute;
   right: 1rem;
   top: 1rem;
-  color: #fa1e0e;
+  color: black;
 }
 .popup-close-icon:hover,
 .popup-close-icon:focus {

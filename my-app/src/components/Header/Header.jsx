@@ -8,19 +8,27 @@ function Header() {
   const { url } = useRouteMatch();
   const [showNots, toggleShowNots] = useReducer((state) => !state, false);
   return (
-    <div className="header">
-      <div className="left">
+    <>
+      <div className="header">
         <h1 className="links">Task Synced</h1>
-      </div>
-      <div className="right">
-        <Link to={`${url}/schedule`}>
-          <h2 className="links">Schedule</h2>
+        <Link
+          to={`${url}/schedule`}
+          className="schedule-link links material-ui-link"
+        >
+          <h2>Schedule</h2>
         </Link>
-        <Link to={`${url}/teams`}>
-          <h2 className="links">Teams</h2>
+        <Link
+          to={`${url}/teams`}
+          className="teams-link  links material-ui-link"
+        >
+          <h2>Teams</h2>
         </Link>
-        <Link to={`${url}/profile`}>
-          <h2 className="links">Profile</h2>
+
+        <Link
+          to={`${url}/profile`}
+          className="profile-link links material-ui-link"
+        >
+          <h2>Profile</h2>
         </Link>
         <NotificationsIcon
           onClick={toggleShowNots}
@@ -28,7 +36,7 @@ function Header() {
         />
       </div>
       {showNots && <Notifications />}
-    </div>
+    </>
   );
 }
 

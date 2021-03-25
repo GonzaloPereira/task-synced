@@ -9,6 +9,7 @@
   display: grid;
   grid-template-columns: 50px 1fr 50px;
   grid-template-rows: 2.5rem;
+  overflow-wrap: anywhere;
 }
 .member > * {
   align-self: center;
@@ -49,4 +50,10 @@
   color: white;
   padding: 2% 4%;
   text-align: center;
+}
+@media only screen and (max-width: 700px) {
+  .member h4 {
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
 }

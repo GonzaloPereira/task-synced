@@ -10,9 +10,7 @@ function TeamLink({ team, selectTeam }) {
       }}
     >
       <AccountCircleIcon className="team-icon" />
-      <h4>
-        {team.name.substring(0, 18) + (team.name.length > 18 ? '...' : '')}
-      </h4>
+      <h4>{team.name}</h4>
     </div>
   );
 }

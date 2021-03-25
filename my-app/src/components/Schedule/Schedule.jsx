@@ -9,7 +9,10 @@ function Schedule() {
   return (
     <div className="schedule">
       <h2>Tasks</h2>
-      <TaskContainer tasks={tasks} style={{ borderRadius: '5px' }} />
+      <TaskContainer
+        tasks={tasks}
+        style={{ borderRadius: '5px', width: '100%' }}
+      />
     </div>
   );
 }

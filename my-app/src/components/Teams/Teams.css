@@ -41,12 +41,13 @@
   flex-direction: column;
   font-size: 1rem;
   border-radius: 10px 10px;
+  color: white;
+  margin-right: 10px;
 }
 .team-add-row {
   display: flex;
   flex-direction: row;
   cursor: pointer;
-  color: white;
 }
 .team-add-row:hover {
   opacity: 0.8;
@@ -66,6 +67,7 @@
   margin: 0;
   display: flex;
   flex-direction: row;
+  overflow-wrap: anywhere;
 }
 .team-link h4 {
   margin: 0;
@@ -86,6 +88,7 @@
   box-sizing: border-box;
   padding-left: 3%;
   flex-grow: 1;
+  overflow-wrap: anywhere;
 }
 .team-description {
   color: white;
@@ -94,8 +97,42 @@
   border-radius: 5px;
   box-sizing: border-box;
   padding: 1rem 1rem;
-  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 .team-description p {
   margin: 0;
+}
+.back-icon {
+  position: absolute;
+  top: 120px;
+  right: 15px;
+}
+.responsive-teams-button {
+  display: none;
+  position: absolute;
+  width: min-content;
+  top: 50px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  color: white;
+}
+@media only screen and (max-width: 700px) {
+  .team-add {
+    left: 150px;
+    top: 110px;
+    background-color: #eeeeee;
+    color: #222831;
+  }
+  .add-icon {
+    margin-left: 10px;
+  }
+  .team-description p {
+    font-size: 0.8rem;
+  }
+  .responsive-teams-button {
+    display: block;
+  }
 }
