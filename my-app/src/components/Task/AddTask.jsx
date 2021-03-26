@@ -20,18 +20,21 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
+    if (!formData.name) {
+      return setError('Empty name not allowed');
+    }
     try {
       setError('');
       setLoading(true);
+
       // create task and give teamId
       const res = await createTaskForTeam(currTeam._id, formData);
       if (!res.ok) throw new Error();
       await close();
       await refreshUser();
       await refreshTeam();
-    } catch (err) {
-      setError("Couldn't create team");
+    } catch {
+      setError('Failed to create a new task');
     }
     if (mounted.current) {
       setLoading(false);
@@ -90,7 +93,7 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
       </form>
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
-      {error && <Alert severity="error">Failed to create a new team!</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
     </Popup>
   );
 }

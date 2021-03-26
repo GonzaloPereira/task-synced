@@ -21,7 +21,17 @@ export default function Signup() {
     if (password.current.value !== passwordConfirm.current.value) {
       return setError('Passwords do not match');
     }
-
+    if (
+      !email.current.value ||
+      !password.current.value ||
+      !passwordConfirm.current.value ||
+      !name.current.value
+    ) {
+      return setError('Empty field not allowed');
+    }
+    if (name.current.value && name.current.value.length > 20) {
+      return setError('Name too long');
+    }
     try {
       setError('');
       setLoading(true);
@@ -31,7 +41,7 @@ export default function Signup() {
         name.current.value,
       );
       if (!res.ok) throw new Error();
-    } catch (err) {
+    } catch {
       setError('Failed to create an account');
     }
     if (mounted.current) {
@@ -77,7 +87,7 @@ export default function Signup() {
         </p>
       </form>
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
-      {error && <Alert severity="error">Failed to create and account!</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
     </div>
   );
 }

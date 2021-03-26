@@ -20,7 +20,12 @@ export default function CreateTeam({ close }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
+    if (!formData.name) {
+      return setError('Empty name not allowed');
+    }
+    if (formData.name && formData.name.length >= 20) {
+      return setError('Name too long');
+    }
     try {
       setError('');
       setLoading(true);
@@ -29,9 +34,8 @@ export default function CreateTeam({ close }) {
       if (!res.ok) throw new Error();
       await close();
       await refreshUser();
-    } catch (err) {
-      console.log(err);
-      setError("Couldn't create team");
+    } catch {
+      setError('Failed to create team');
     }
     if (mounted.current) {
       setLoading(false);
@@ -78,7 +82,7 @@ export default function CreateTeam({ close }) {
       </form>
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
-      {error && <Alert severity="error">Failed to create a new team!</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
     </Popup>
   );
 }

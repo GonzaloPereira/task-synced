@@ -21,7 +21,9 @@ export default function JoinTeam({ close }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
+    if (!formData.teamId) {
+      return setError('Empty field not allowed');
+    }
     try {
       setError('');
       setLoading(true);
@@ -30,8 +32,8 @@ export default function JoinTeam({ close }) {
       if (!res.ok) throw new Error();
       await close();
       await refreshUser();
-    } catch (err) {
-      setError("Couldn't join team");
+    } catch {
+      setError('Failed to join the team!');
     }
     if (mounted.current) {
       setLoading(false);
@@ -68,7 +70,7 @@ export default function JoinTeam({ close }) {
       </form>
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
-      {error && <Alert severity="error">Failed to join the team!</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
     </Popup>
   );
 }

@@ -20,19 +20,22 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
+    if (!formData.id) {
+      return setError('Empty field not allowed');
+    }
     try {
       setError('');
       setLoading(true);
       // Add member to team with id == TeamId
       const userToAdd = await getUserWithId(formData.id);
+      if (!userToAdd._id) throw new Error("User doesn't exist");
       const res = await addMember(currTeam._id, userToAdd);
       if (!res.ok) throw new Error();
       await close();
       await refreshTeam();
     } catch (err) {
-      console.log(err);
-      setError("Couldn't create team");
+      if (err.message === "User doesn't exist") setError(err.message);
+      else setError('Failed to add new member');
     }
     if (mounted.current) {
       setLoading(false);
@@ -72,7 +75,7 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
 
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
-      {error && <Alert severity="error">Failed to add new member!</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
     </Popup>
   );
 }

@@ -16,14 +16,17 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
+    if (!email.current.value || !password.current.value) {
+      return setError('Empty field not allowed');
+    }
     try {
       setError('');
       setLoading(true);
+
       const res = await login(email.current.value, password.current.value);
       if (!res.ok) throw new Error();
     } catch {
-      setError('Failed to log in');
+      setError('Failed to login');
     }
     if (mounted.current) {
       setLoading(false);
@@ -57,7 +60,7 @@ export default function Login() {
         </p>
       </form>
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
-      {error && <Alert severity="error">Failed to login!</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
     </div>
   );
 }
