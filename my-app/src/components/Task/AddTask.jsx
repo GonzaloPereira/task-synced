@@ -23,6 +23,9 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
     if (!formData.name) {
       return setError('Empty name not allowed');
     }
+    if (formData.name && formData.name.length > 30) {
+      return setError('Name too long');
+    }
     try {
       setError('');
       setLoading(true);
