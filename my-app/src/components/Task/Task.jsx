@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useState, useReducer, useEffect, useRef } from 'react';
 import './Task.css';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
@@ -6,69 +6,77 @@ import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import CheckIcon from '@material-ui/icons/Check';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CloseIcon from '@material-ui/icons/Close';
+import RestoreIcon from '@material-ui/icons/Restore';
 import useWindowDimensions from '../extra/WindowDimensions';
 
 export default function Task({ task, editable, deleteTask }) {
-  const { _id: taskId, name, description, date } = task;
-  const [dropDescrip, setDropDescrip] = useReducer((st) => !st, false);
-  const [showArrow, setShowArrow] = useState(false);
-  const [isDone, toggleIsDone] = useReducer((st) => !st, false);
+  const { _id: taskId, name, description, date: stringDate } = task;
   const { width } = useWindowDimensions();
   const [responsiveStyle, setResponsiveStyle] = useState();
+  const [showArrow, setShowArrow] = useState(false);
+  const [dropDescrip, setDropDescrip] = useReducer((st) => !st, false);
+  const [isDone, toggleIsDone] = useReducer((st) => !st, false);
   const showOptions =
     (editable && width > 700) || (width <= 700 && dropDescrip && editable);
-  // useEffect(() => {
-  //   if (width <= 700) {
-  //     setResponsiveStyle({
-  //       gridTemplateColumns: showOptions
-  //         ? '50px 5fr 30px 30px'
-  //         : '50px 5fr 30px minmax(120px,1fr)',
-  //       gridTemplateRows: showOptions
-  //         ? 'minmax(2.5rem, auto) 2rem  auto'
-  //         : 'minmax(2.5rem, auto) auto',
-  //     });
-  //   } else {
-  //     setResponsiveStyle({
-  //       gridTemplateColumns: editable
-  //         ? '50px 5fr 50px 1fr 50px 50px'
-  //         : '50px 5fr 50px 1fr',
-  //     });
-  //   }
-  // }, [width, showOptions]);
+  const date = stringDate ? new Date(stringDate) : '';
+  const pastDate = date < new Date();
 
+  // eslint-disable-next-line arrow-body-style
   useEffect(() => {
     if (!editable) {
       setResponsiveStyle({
-        gridTemplateColumns: '50px 5fr 30px minmax(120px,1fr)',
+        gridTemplateColumns: `50px 5fr ${date ? '30px minmax(120px,1fr)' : ''}`,
       });
     } else {
       // eslint-disable-next-line no-lonely-if
       if (width <= 700) {
         setResponsiveStyle({
           gridTemplateColumns: dropDescrip
-            ? '50px 5fr 30px 30px'
-            : '50px 5fr 30px minmax(120px,1fr)',
+            ? '50px 5fr 40px'
+            : '50px 5fr 40px minmax(120px,1fr)',
           gridTemplateRows: dropDescrip
             ? 'minmax(2.5rem, auto) 2rem  auto'
             : 'minmax(2.5rem, auto) auto',
         });
       } else {
         setResponsiveStyle({
-          gridTemplateColumns: '50px 5fr 50px 1fr 50px 50px',
+          gridTemplateColumns: `50px 5fr ${date ? '50px 1fr' : ''} 50px`,
           gridTemplateRows: 'minmax(2.5rem, auto) auto',
         });
       }
     }
   }, [width, dropDescrip]);
+
+  const timeoutId = useRef('');
+  const intervalId = useRef('');
+  const [opacity, setOpacity] = useState(1);
+  // eslint-disable-next-line arrow-body-style
+  useEffect(() => {
+    return () => clearInterval(intervalId);
+  }, []);
+
+  function cancelDelete() {
+    clearTimeout(timeoutId.current);
+    clearInterval(intervalId.current);
+    setOpacity(1);
+  }
+
+  function callForDelete() {
+    intervalId.current = setInterval(() => {
+      setOpacity((prevOpacity) => prevOpacity - 0.025);
+    }, 50);
+    timeoutId.current = setTimeout(() => {
+      deleteTask(taskId);
+    }, 2000);
+  }
+
   return (
     <div
       className="task"
       onMouseOver={() => setShowArrow(true)}
       onMouseOut={() => setShowArrow(false)}
       onClick={() => setDropDescrip(true)}
-      style={responsiveStyle}
+      style={{ ...responsiveStyle, opacity }}
     >
       {showArrow || dropDescrip ? (
         <>{dropDescrip ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} </>
@@ -84,20 +92,20 @@ export default function Task({ task, editable, deleteTask }) {
       >
         {name}
       </h4>
-      <CalendarTodayIcon />
-      <h5>
-        {date
-          ? new Date(
-              date.substring(0, 4),
-              date.substring(5, 7),
-              date.substring(8, 10),
-            ).toLocaleDateString('es-GB', {
-              weekday: 'long',
-              day: 'numeric',
-              month: 'short',
-            })
-          : ''}
-      </h5>
+      {(date || (dropDescrip && width <= 700)) && (
+        <>
+          <CalendarTodayIcon />
+          <h5 style={{ color: pastDate ? '#e84545' : 'white' }}>
+            {date
+              ? date.toLocaleDateString('es-GB', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'short',
+                })
+              : ''}
+          </h5>
+        </>
+      )}
       {showOptions && (
         <>
           {!isDone ? (
@@ -105,37 +113,36 @@ export default function Task({ task, editable, deleteTask }) {
               className="task-button"
               onMouseOver={(e) => e.stopPropagation()}
               onMouseOut={(e) => e.stopPropagation()}
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
                 toggleIsDone();
+                callForDelete();
               }}
               style={{ color: '00adb5' }}
             />
           ) : (
-            <CloseIcon
+            <RestoreIcon
               className="task-button"
               onMouseOver={(e) => e.stopPropagation()}
               onMouseOut={(e) => e.stopPropagation()}
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
                 toggleIsDone();
+                cancelDelete();
               }}
               style={{ color: 'e84545' }}
             />
           )}
-          <DeleteIcon
-            className="task-button"
-            onMouseOver={(e) => e.stopPropagation()}
-            onMouseOut={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.stopPropagation();
-              deleteTask(taskId);
-            }}
-            style={{ color: 'e84545' }}
-          />
         </>
       )}
-      {dropDescrip && <div className="task-description">{description}</div>}
+      {dropDescrip && (
+        <div
+          className="task-description"
+          style={{ color: description ? 'white' : 'gray' }}
+        >
+          {description ?? 'Add a description'}
+        </div>
+      )}
     </div>
   );
 }

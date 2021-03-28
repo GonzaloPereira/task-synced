@@ -1,6 +1,7 @@
 import React, { useState, useReducer } from 'react';
 import './Teams.css';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import TaskContainer from '../Task/TaskContainer';
 import AddTask from '../Task/AddTask';
 import MembersContainer from './Member/MembersContainer';
@@ -40,7 +41,7 @@ function TeamDescription({ currTeam, resetTeams, selectTeam, style }) {
         onClick={toggleShowAddTask}
         style={tasks && tasks.length ? {} : { borderRadius: '5px' }}
       >
-        <AddCircleOutlineIcon style={{ color: '00adb5' }} />
+        <LibraryAddIcon style={{ color: '00adb5' }} />
         <h5>Add new task</h5>
       </div>
 
@@ -55,7 +56,7 @@ function TeamDescription({ currTeam, resetTeams, selectTeam, style }) {
         onClick={toggleShowAddMember}
         style={members && members.length ? {} : { borderRadius: '5px' }}
       >
-        <AddCircleOutlineIcon style={{ color: '00adb5' }} />
+        <PersonAddIcon style={{ color: '00adb5' }} />
         <h5>Add new member</h5>
       </div>
 
