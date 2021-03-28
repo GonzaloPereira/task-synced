@@ -28,8 +28,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // const url = 'mongodb://localhost:27017/TaskSyncedDB';
-const url =
-  'mongodb+srv://admin-gonzalo:micontra123@gettingstarted.ru2tp.mongodb.net/tasksyncedDB?retryWrites=true&w=majority';
+const url = `mongodb+srv://TASK_SYNCED_ADMIN:${process.env.TASK_SYNCED_ADMIN_KEY}@${process.env.CLUSTER_NAME}.ewqmc.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`;
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set('useCreateIndex', true);
 
