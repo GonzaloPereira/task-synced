@@ -16,3 +16,6 @@ code {
 .material-ui-link {
   text-decoration: none;
 }
+.red {
+  color: #e84545;
+}

@@ -10,6 +10,12 @@ function Teams() {
   const [currTeam, setCurrTeam] = useState('');
   const { width } = useWindowDimensions();
   const { currentUser } = useAuth();
+
+  const userIsAdmin = currTeam
+    ? currTeam.members.find((member) => member._id === currentUser._id)
+        .isAdmin === 1
+    : 0;
+
   const [responsiveStyleNav, setResponsiveStyleNav] = useState({
     minWidth: '100%',
     maxWidth: '100%',
@@ -76,6 +82,7 @@ function Teams() {
         resetTeams={() => {
           setCurrTeam('');
         }}
+        userIsAdmin={userIsAdmin}
       />
     </div>
   );

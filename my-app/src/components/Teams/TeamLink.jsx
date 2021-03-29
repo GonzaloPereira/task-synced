@@ -6,7 +6,7 @@ function TeamLink({ team, selectTeam }) {
     <div
       className="team-link"
       onClick={() => {
-        selectTeam(team.id);
+        selectTeam(team._id);
       }}
     >
       <AccountCircleIcon className="team-icon" />

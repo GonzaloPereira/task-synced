@@ -8,7 +8,7 @@ function TeamNav({ teams, selectTeam, style }) {
     <div className="team-nav" style={style}>
       <TeamTitle />
       {teams.map((team, idx) => (
-        <div key={team.id}>
+        <div key={team._id}>
           {idx !== 0 && <hr className="teams-separator-line" />}
           <TeamLink team={team} selectTeam={selectTeam} />
         </div>

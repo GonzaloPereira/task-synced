@@ -9,7 +9,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import RestoreIcon from '@material-ui/icons/Restore';
 import useWindowDimensions from '../extra/WindowDimensions';
 
-export default function Task({ task, editable, deleteTask }) {
+export default function Task({ task, editable, deleteTask, userIsAdmin }) {
   const { _id: taskId, name, description, date: stringDate } = task;
   const { width } = useWindowDimensions();
   const [responsiveStyle, setResponsiveStyle] = useState();
@@ -33,7 +33,7 @@ export default function Task({ task, editable, deleteTask }) {
         setResponsiveStyle({
           gridTemplateColumns: dropDescrip
             ? '50px 5fr 40px'
-            : '50px 5fr 40px minmax(120px,1fr)',
+            : `50px 5fr ${date ? '40px minmax(120px,1fr)' : ''}`,
           gridTemplateRows: dropDescrip
             ? 'minmax(2.5rem, auto) 2rem  auto'
             : 'minmax(2.5rem, auto) auto',
@@ -92,7 +92,7 @@ export default function Task({ task, editable, deleteTask }) {
       >
         {name}
       </h4>
-      {(date || (dropDescrip && width <= 700)) && (
+      {(date || (editable && dropDescrip && width <= 700)) && (
         <>
           <CalendarTodayIcon />
           <h5 style={{ color: pastDate ? '#e84545' : 'white' }}>
@@ -106,7 +106,7 @@ export default function Task({ task, editable, deleteTask }) {
           </h5>
         </>
       )}
-      {showOptions && (
+      {showOptions && userIsAdmin && (
         <>
           {!isDone ? (
             <CheckIcon

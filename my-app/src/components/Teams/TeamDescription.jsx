@@ -8,20 +8,30 @@ import MembersContainer from './Member/MembersContainer';
 import AddMember from './Member/AddMember';
 import useWindowDimensions from '../extra/WindowDimensions';
 
-function TeamDescription({ currTeam, resetTeams, selectTeam, style }) {
+function TeamDescription({
+  currTeam,
+  resetTeams,
+  selectTeam,
+  userIsAdmin,
+  style,
+}) {
   if (!currTeam)
     return (
       <div className="team-content" style={style}>
         <h2>Select a team!</h2>
       </div>
     );
+
   const { name, description, tasks, members } = currTeam;
   const [showAddTask, toggleShowAddTask] = useReducer((st) => !st, false);
   const [showAddMember, toggleShowAddMember] = useReducer((st) => !st, false);
   const { width } = useWindowDimensions();
+  const numAdmins = members.reduce((acc, curr) => acc + curr.isAdmin, 0);
+  console.log('numadmins', numAdmins);
   function refreshTeam() {
     selectTeam(currTeam._id);
   }
+
   return (
     <div className="team-content" style={style}>
       <h3>{name}</h3>
@@ -33,6 +43,7 @@ function TeamDescription({ currTeam, resetTeams, selectTeam, style }) {
       <TaskContainer
         tasks={tasks}
         teamId={currTeam._id}
+        userIsAdmin={userIsAdmin}
         refreshTeam={refreshTeam}
         editable
       />
@@ -49,6 +60,8 @@ function TeamDescription({ currTeam, resetTeams, selectTeam, style }) {
       <MembersContainer
         members={members}
         teamId={currTeam._id}
+        userIsAdmin={userIsAdmin}
+        numAdmins={numAdmins}
         refreshTeam={refreshTeam}
       />
       <div

@@ -5,11 +5,11 @@
   width: 95%;
 }
 .member {
-  border-radius: 5px;
   display: grid;
-  grid-template-columns: 50px 1fr 50px;
+  grid-template-columns: 50px 1fr 50px 50px;
   grid-template-rows: 2.5rem;
   overflow-wrap: anywhere;
+  position: relative;
 }
 .member > * {
   align-self: center;
@@ -50,6 +50,26 @@
   color: white;
   padding: 2% 4%;
   text-align: center;
+}
+.admin-name:hover {
+  opacity: 0.9;
+  cursor: pointer;
+}
+.admin-status {
+  background-color: #393e46;
+  color: white;
+  width: max-content;
+  padding: 0.4rem;
+  position: absolute;
+  bottom: 2.5rem;
+  right: 0rem;
+  border-radius: 5px;
+  text-align: right;
+  display: flex;
+  flex-direction: row;
+}
+.admin-status h6 {
+  margin: auto 0;
 }
 @media only screen and (max-width: 700px) {
   .member h4 {

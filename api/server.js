@@ -28,7 +28,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // const url = 'mongodb://localhost:27017/TaskSyncedDB';
-const url = `mongodb+srv://TASK_SYNCED_ADMIN:${process.env.TASK_SYNCED_ADMIN_KEY}@${process.env.CLUSTER_NAME}.ewqmc.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`;
+const url = process.env.MONGODB_CONNECTION_URL;
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set('useCreateIndex', true);
 
@@ -44,7 +44,7 @@ const Task = mongoose.model('Task', taskSchema);
 const teamSchema = new mongoose.Schema({
   name: String,
   description: String,
-  members: [{ id: String, name: String }],
+  members: [{ id: String, name: String, isAdmin: Number }],
   tasks: [taskSchema],
 });
 const Team = mongoose.model('Team', teamSchema);
@@ -118,23 +118,6 @@ app.post('/api/login', (req, res, next) => {
     }
   });
 });
-
-// Inserting an example team
-// const myTeam = new Team({
-//   name: 'Los snickers',
-//   members: [
-//     { id: 1, name: 'gonzalote' },
-//     { id: 2, name: 'El vinces' },
-//   ],
-//   tasks: [
-//     {
-//       name: 'first task',
-//       description: 'La descripcion mas unica que te inventes',
-//       date: new Date(),
-//     },
-//   ],
-// });
-// myTeam.save();
 
 app
   .route('/api/teams')
@@ -264,11 +247,7 @@ app
     });
   })
   .post(async (req, res) => {
-    const { id, name } = req.body;
-    const newMember = {
-      id: id,
-      name: name,
-    };
+    const newMember = req.body;
     try {
       const team = await Team.findOneAndUpdate(
         { _id: req.params.teamId },
@@ -277,11 +256,11 @@ app
       ).exec();
       const { tasks: newTasks, name: teamName } = team;
       await User.updateOne(
-        { _id: id },
+        { _id: newMember._id },
         {
           $push: {
             tasks: { $each: newTasks },
-            teams: { id: req.params.teamId, name: teamName },
+            teams: { _id: req.params.teamId, name: teamName },
           },
         }
       ).exec();
@@ -300,7 +279,7 @@ app
       } else {
         res.json(
           foundTeam.members.find(
-            (member) => String(member.id) === req.params.memberId
+            (member) => String(member._id) === req.params.memberId
           )
         );
       }
@@ -310,17 +289,34 @@ app
     try {
       const team = await Team.findOneAndUpdate(
         { _id: req.params.teamId },
-        { $pull: { members: { id: req.params.memberId } } }
+        { $pull: { members: { _id: req.params.memberId } } }
       ).exec();
       const { tasks } = team;
       const tasksId = tasks.map((task) => task.id);
       await User.updateOne(
         { _id: req.params.memberId },
-        { $pull: { teams: { id: req.params.teamId }, tasks: { _id: tasksId } } }
+        {
+          $pull: { teams: { _id: req.params.teamId }, tasks: { _id: tasksId } },
+        }
       ).exec();
       res.send('Sucessfully removed the member');
     } catch (err) {
       res.send(err);
+    }
+  });
+app
+  .route('/api/teams/:teamId/members/:memberId/admin')
+  .patch(async (req, res, next) => {
+    try {
+      await Team.updateOne(
+        { _id: req.params.teamId, 'members._id': req.params.memberId },
+        {
+          $bit: { 'members.$.isAdmin': { xor: 1 } },
+        }
+      ).exec();
+      res.send('Update member to admin sucessfully');
+    } catch (err) {
+      next(err);
     }
   });
 

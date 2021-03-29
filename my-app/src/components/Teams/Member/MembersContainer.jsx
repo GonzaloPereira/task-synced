@@ -4,7 +4,13 @@ import './Member.css';
 import { removeMember } from '../../../request/teams';
 import { useAuth } from '../../contexts/AuthContext';
 
-export default function MembersContainer({ members, teamId, refreshTeam }) {
+export default function MembersContainer({
+  members,
+  teamId,
+  refreshTeam,
+  userIsAdmin,
+  numAdmins,
+}) {
   const { refreshUser } = useAuth();
   async function deleteMember(userId) {
     try {
@@ -20,7 +26,14 @@ export default function MembersContainer({ members, teamId, refreshTeam }) {
       {members.map((member, idx) => (
         <div key={member._id}>
           {idx !== 0 && <hr className="dark-separator-line" />}
-          <Member member={member} deleteMember={deleteMember} />
+          <Member
+            member={member}
+            teamId={teamId}
+            userIsAdmin={userIsAdmin}
+            numAdmins={numAdmins}
+            refreshTeam={refreshTeam}
+            deleteMember={deleteMember}
+          />
         </div>
       ))}
     </div>
