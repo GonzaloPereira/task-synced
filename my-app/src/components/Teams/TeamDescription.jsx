@@ -27,7 +27,6 @@ function TeamDescription({
   const [showAddMember, toggleShowAddMember] = useReducer((st) => !st, false);
   const { width } = useWindowDimensions();
   const numAdmins = members.reduce((acc, curr) => acc + curr.isAdmin, 0);
-  console.log('numadmins', numAdmins);
   function refreshTeam() {
     selectTeam(currTeam._id);
   }

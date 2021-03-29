@@ -44,7 +44,7 @@ const Task = mongoose.model('Task', taskSchema);
 const teamSchema = new mongoose.Schema({
   name: String,
   description: String,
-  members: [{ id: String, name: String, isAdmin: Number }],
+  members: [{ name: String, isAdmin: Number }],
   tasks: [taskSchema],
 });
 const Team = mongoose.model('Team', teamSchema);
@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema({
   username: String,
   password: String,
   tasks: [taskSchema],
-  teams: [{ id: String, name: String }],
+  teams: [{ name: String }],
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -193,7 +193,7 @@ app
         { new: true }
       ).exec();
       const { members } = team;
-      const membersId = members.map((member) => member.id);
+      const membersId = members.map((member) => member._id);
       await User.updateMany(
         { _id: membersId },
         { $push: { tasks: newTask } }
@@ -224,7 +224,7 @@ app
         { $pull: { tasks: { _id: req.params.taskId } } }
       ).exec();
       const { members } = team;
-      const membersId = members.map((member) => member.id);
+      const membersId = members.map((member) => member._id);
       await User.updateMany(
         { _id: membersId },
         { $pull: { tasks: { _id: req.params.taskId } } }
@@ -292,7 +292,7 @@ app
         { $pull: { members: { _id: req.params.memberId } } }
       ).exec();
       const { tasks } = team;
-      const tasksId = tasks.map((task) => task.id);
+      const tasksId = tasks.map((task) => task._id);
       await User.updateOne(
         { _id: req.params.memberId },
         {
