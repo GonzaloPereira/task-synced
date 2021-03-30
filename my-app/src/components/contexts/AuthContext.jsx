@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import {
   createUserWithEmailAndPassword,
@@ -23,16 +24,23 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }
 
+  function setOneSignalId() {
+    OneSignal.push(async () => {
+      const user = await getUser();
+      OneSignal.setExternalUserId(String(user._id));
+    });
+  }
+
   function signup(email, password, name) {
-    return createUserWithEmailAndPassword(email, password, name).then(() =>
-      refreshUser(),
-    );
+    return createUserWithEmailAndPassword(email, password, name)
+      .then(() => refreshUser())
+      .then(() => setOneSignalId());
   }
 
   function login(email, password) {
-    return loginInWithEmailAndPassword(email, password).then(() =>
-      refreshUser(),
-    );
+    return loginInWithEmailAndPassword(email, password)
+      .then(() => refreshUser())
+      .then(() => setOneSignalId());
   }
 
   function logout() {

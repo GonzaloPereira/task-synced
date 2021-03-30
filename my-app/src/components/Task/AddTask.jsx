@@ -83,7 +83,7 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
         <label htmlFor="date">
           <p>Expected date</p>
           <input
-            type="date"
+            type="datetime-local"
             id="date"
             name="date"
             value={formData.date || ''}

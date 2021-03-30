@@ -47,7 +47,7 @@ h2.links:hover {
   h2.links {
     grid-row: 2 /3;
   }
-  .not-icon {
+  .notification-open-icon {
     grid-row: 1 /2;
     grid-column: 6 /7;
   }

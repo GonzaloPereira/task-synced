@@ -23,7 +23,7 @@ export default function CreateTeam({ close }) {
     if (!formData.name) {
       return setError('Empty name not allowed');
     }
-    if (formData.name && formData.name.length >= 20) {
+    if (formData.name && formData.name.length >= 40) {
       return setError('Name too long');
     }
     try {

@@ -9,6 +9,8 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const findOrCreate = require('mongoose-find-or-create');
 const path = require('path');
+const https = require('https');
+const { send } = require('process');
 
 const app = express();
 
@@ -41,6 +43,14 @@ const taskSchema = new mongoose.Schema({
 });
 const Task = mongoose.model('Task', taskSchema);
 
+const notificationSchema = new mongoose.Schema({
+  name: String,
+  description: String,
+  date: Date,
+  type: Number,
+});
+const Notification = mongoose.model('Notification', notificationSchema);
+
 const teamSchema = new mongoose.Schema({
   name: String,
   description: String,
@@ -55,6 +65,7 @@ const userSchema = new mongoose.Schema({
   password: String,
   tasks: [taskSchema],
   teams: [{ name: String }],
+  notifications: [notificationSchema],
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -165,6 +176,40 @@ app
       }
     });
   });
+const sendNotifications = (targetIds, notificationContent) => {
+  const data = {
+    app_id: process.env.ONESIGNAL_API_ID,
+    contents: { en: notificationContent },
+    channel_for_external_user_ids: 'push',
+    include_external_user_ids: targetIds,
+  };
+
+  const options = {
+    host: 'onesignal.com',
+    port: 443,
+    path: '/api/v1/notifications',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      Authorization: `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
+    },
+  };
+
+  const req = https.request(options, (res) => {
+    res.on('data', (d) => {
+      console.log('Response:');
+      console.log(JSON.parse(d));
+    });
+  });
+
+  req.on('error', (e) => {
+    console.log('ERROR:');
+    console.log(e);
+  });
+
+  req.write(JSON.stringify(data));
+  req.end();
+};
 
 app
   .route('/api/teams/:teamId/tasks')
@@ -186,18 +231,33 @@ app
       description: description,
       date: date,
     });
+
     try {
       const team = await Team.findOneAndUpdate(
         { _id: req.params.teamId },
         { $push: { tasks: newTask } },
         { new: true }
       ).exec();
+
       const { members } = team;
       const membersId = members.map((member) => member._id);
+      const newNotification = new Notification({
+        name: `Your team "${team.name}"`,
+        description: `has added a new task "${newTask.name}"`,
+        date: new Date(),
+        type: 1,
+      });
+
       await User.updateMany(
         { _id: membersId },
-        { $push: { tasks: newTask } }
+        { $push: { tasks: newTask, notifications: newNotification } }
       ).exec();
+
+      sendNotifications(
+        membersId,
+        `A new task has been added to your team "${team.name}"`
+      );
+
       res.send('Sucessfully added task');
     } catch (err) {
       res.send(err);
@@ -223,12 +283,32 @@ app
         { _id: req.params.teamId },
         { $pull: { tasks: { _id: req.params.taskId } } }
       ).exec();
-      const { members } = team;
+
+      const { members, tasks } = team;
+      const { name: taskName } = tasks.find(
+        (task) => String(task._id) === req.params.taskId
+      );
       const membersId = members.map((member) => member._id);
+      const newNotification = new Notification({
+        name: `Your team "${team.name}"`,
+        description: `has completed a task "${taskName}"`,
+        date: new Date(),
+        type: 2,
+      });
+
       await User.updateMany(
         { _id: membersId },
-        { $pull: { tasks: { _id: req.params.taskId } } }
+        {
+          $pull: { tasks: { _id: req.params.taskId } },
+          $push: { notifications: newNotification },
+        }
       ).exec();
+
+      sendNotifications(
+        membersId,
+        `Your team "${team.name}" has completed a task`
+      );
+
       res.send('Sucessfully deleted the task');
     } catch (err) {
       res.send(err);
@@ -248,22 +328,37 @@ app
   })
   .post(async (req, res) => {
     const newMember = req.body;
+
     try {
       const team = await Team.findOneAndUpdate(
         { _id: req.params.teamId },
         { $push: { members: newMember } },
         { new: true }
       ).exec();
+
       const { tasks: newTasks, name: teamName } = team;
+      const newNotification = new Notification({
+        name: `You have been added to the team`,
+        description: `"${teamName}"`,
+        date: new Date(),
+        type: 3,
+      });
       await User.updateOne(
         { _id: newMember._id },
         {
           $push: {
             tasks: { $each: newTasks },
             teams: { _id: req.params.teamId, name: teamName },
+            notifications: newNotification,
           },
         }
       ).exec();
+
+      sendNotifications(
+        [newMember._id],
+        `You have been added to the team "${teamName}"`
+      );
+
       res.send('Sucessfully added member');
     } catch (err) {
       res.send(err);
@@ -436,6 +531,22 @@ app
           res.send(err);
         } else {
           res.send('Sucessfully deleted the task');
+        }
+      }
+    );
+  });
+
+app
+  .route('/api/users/:userId/notifications/:notificationId')
+  .delete((req, res) => {
+    User.updateOne(
+      { _id: req.params.userId },
+      { $pull: { notifications: { _id: req.params.notificationId } } },
+      (err) => {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send('Sucessfully deleted the notification');
         }
       }
     );

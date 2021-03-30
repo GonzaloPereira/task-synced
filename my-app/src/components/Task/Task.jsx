@@ -52,7 +52,10 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
   const [opacity, setOpacity] = useState(1);
   // eslint-disable-next-line arrow-body-style
   useEffect(() => {
-    return () => clearInterval(intervalId);
+    return () => {
+      if (intervalId.current) clearInterval(intervalId.current);
+      if (timeoutId.current) clearTimeout(timeoutId.current);
+    };
   }, []);
 
   function cancelDelete() {
@@ -100,7 +103,10 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
               ? date.toLocaleDateString('es-GB', {
                   weekday: 'long',
                   day: 'numeric',
-                  month: 'short',
+                  month: 'long',
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  hour12: 'true',
                 })
               : ''}
           </h5>
@@ -110,7 +116,7 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
         <>
           {!isDone ? (
             <CheckIcon
-              className="task-button"
+              className="task-button blue-icon"
               onMouseOver={(e) => e.stopPropagation()}
               onMouseOut={(e) => e.stopPropagation()}
               onClick={async (e) => {
@@ -118,11 +124,10 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
                 toggleIsDone();
                 callForDelete();
               }}
-              style={{ color: '00adb5' }}
             />
           ) : (
             <RestoreIcon
-              className="task-button"
+              className="task-button red-icon"
               onMouseOver={(e) => e.stopPropagation()}
               onMouseOut={(e) => e.stopPropagation()}
               onClick={async (e) => {
@@ -130,7 +135,6 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
                 toggleIsDone();
                 cancelDelete();
               }}
-              style={{ color: 'e84545' }}
             />
           )}
         </>
@@ -140,7 +144,7 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
           className="task-description"
           style={{ color: description ? 'white' : 'gray' }}
         >
-          {description ?? 'Add a description'}
+          {description ?? 'No description'}
         </div>
       )}
     </div>

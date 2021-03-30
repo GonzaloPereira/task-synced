@@ -6,11 +6,10 @@ import { getTeam } from '../../request/teams';
 import useWindowDimensions from '../extra/WindowDimensions';
 
 function Teams() {
-  const [teams, setTeams] = useState([]);
   const [currTeam, setCurrTeam] = useState('');
   const { width } = useWindowDimensions();
   const { currentUser } = useAuth();
-
+  const { teams } = currentUser;
   const userIsAdmin = currTeam
     ? currTeam.members.find((member) => member._id === currentUser._id)
         .isAdmin === 1
@@ -56,11 +55,6 @@ function Teams() {
       });
     }
   }, [currTeam, width]);
-
-  useEffect(() => {
-    const { teams: listTeams } = currentUser;
-    setTeams(listTeams);
-  }, [currentUser]);
 
   async function selectTeam(teamId) {
     // Call function that will get the team with id = teamId

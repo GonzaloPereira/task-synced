@@ -16,6 +16,9 @@ code {
 .material-ui-link {
   text-decoration: none;
 }
-.red {
+.red-icon {
   color: #e84545;
+}
+.blue-icon {
+  color: #00adb5;
 }
