@@ -15,6 +15,7 @@
     0 100px 80px rgba(0, 0, 0, 0.12);
   overflow: auto;
   max-height: calc(100vh - 80px);
+  margin-left: 10px;
 }
 .notification {
   background-color: #393e46;
