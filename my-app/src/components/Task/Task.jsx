@@ -1,7 +1,6 @@
 import React, { useState, useReducer, useEffect, useRef } from 'react';
 import './Task.css';
 import moment from 'moment';
-import 'moment/locale/es-us';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
@@ -22,7 +21,6 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
     (editable && width > 700) || (width <= 700 && dropDescrip && editable);
   const date = stringDate ? new Date(stringDate) : '';
   const pastDate = date < new Date();
-  moment.locale('es-us');
 
   // eslint-disable-next-line arrow-body-style
   useEffect(() => {

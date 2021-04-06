@@ -34,7 +34,7 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
       // create task and give teamId
       const task = {
         ...formData,
-        date: moment(formData.date).toISOString(),
+        date: formData.date ? moment(formData.date).toISOString() : '',
       };
       const res = await createTaskForTeam(currTeam._id, task);
       if (!res.ok) throw new Error();
