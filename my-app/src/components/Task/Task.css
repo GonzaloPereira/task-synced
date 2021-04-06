@@ -22,7 +22,7 @@
   margin-bottom: 5px;
 }
 .task h5 {
-  margin: 0 8px;
+  margin: 0 5px;
   text-align: center;
 }
 .task-button:hover {
@@ -73,6 +73,10 @@
 @media only screen and (max-width: 700px) {
   .task h4 {
     font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .task h5 {
+    font-size: 0.65rem;
     font-weight: 500;
   }
   .add-task h5 {

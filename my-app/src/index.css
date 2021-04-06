@@ -7,8 +7,25 @@ body {
 }
 h1 {
   font-family: 'BioRhyme', serif;
+  font-weight: 700;
 }
-
+h2 {
+  font-weight: 600;
+}
+h3 {
+  font-weight: 600;
+}
+h4 {
+  font-weight: 500;
+}
+h5 {
+  font-weight: 500;
+}
+p {
+  font-weight: 400;
+  font-size: 0.9rem;
+  margin: 0;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

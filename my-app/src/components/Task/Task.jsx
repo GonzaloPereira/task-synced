@@ -99,9 +99,11 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
         <>
           <CalendarTodayIcon />
           <h5 style={{ color: pastDate ? '#e84545' : 'white' }}>
-            {moment(date).calendar(null, {
-              sameElse: 'dddd MMMM h:mm A',
-            })}
+            {date
+              ? moment(date).calendar(null, {
+                  sameElse: 'dddd MMMM h:mm A',
+                })
+              : ''}
           </h5>
         </>
       )}
@@ -137,7 +139,7 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
           className="task-description"
           style={{ color: description ? 'white' : 'gray' }}
         >
-          {description ?? 'No description'}
+          <p>{description ?? 'No description'}</p>
         </div>
       )}
     </div>
