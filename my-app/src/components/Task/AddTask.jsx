@@ -1,4 +1,5 @@
 import React, { useState, useReducer, useRef, useEffect } from 'react';
+import moment from 'moment';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import { createTaskForTeam } from '../../request/teams';
@@ -18,8 +19,7 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
   const { refreshUser } = useAuth();
   const mounted = useRef(false);
 
-  async function handleSubmit(event) {
-    event.preventDefault();
+  async function handleSubmit() {
     if (!formData.name) {
       return setError('Empty name not allowed');
     }
@@ -43,6 +43,12 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
       setLoading(false);
     }
   }
+  function prevSubmit(event) {
+    event.preventDefault();
+    setFormData({ date: moment(formData.date).toDate }, () => {
+      handleSubmit();
+    });
+  }
   useEffect(() => {
     mounted.current = true;
     return () => {
@@ -55,6 +61,7 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
       value: event.target.value,
     });
   }
+  console.log(moment(formData.date).toDate());
   return (
     <Popup close={close}>
       <h2>Create new Task</h2>

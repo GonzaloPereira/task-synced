@@ -72,7 +72,7 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
       deleteTask(taskId);
     }, 2000);
   }
-
+  console.log(date);
   return (
     <div
       className="task"
