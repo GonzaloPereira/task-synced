@@ -1,5 +1,7 @@
 import React, { useState, useReducer, useEffect, useRef } from 'react';
 import './Task.css';
+import moment from 'moment';
+import 'moment/locale/es-us';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
@@ -20,6 +22,7 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
     (editable && width > 700) || (width <= 700 && dropDescrip && editable);
   const date = stringDate ? new Date(stringDate) : '';
   const pastDate = date < new Date();
+  moment.locale('es-us');
 
   // eslint-disable-next-line arrow-body-style
   useEffect(() => {
@@ -72,7 +75,6 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
       deleteTask(taskId);
     }, 2000);
   }
-  console.log(date);
   return (
     <div
       className="task"
@@ -99,16 +101,9 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
         <>
           <CalendarTodayIcon />
           <h5 style={{ color: pastDate ? '#e84545' : 'white' }}>
-            {date
-              ? date.toLocaleDateString('es-GB', {
-                  weekday: 'long',
-                  day: 'numeric',
-                  month: 'long',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: 'true',
-                })
-              : ''}
+            {moment(date).calendar(null, {
+              sameElse: 'dddd MMMM h:mm A',
+            })}
           </h5>
         </>
       )}

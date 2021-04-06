@@ -3,6 +3,7 @@ import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
+import moment from 'moment';
 import { deleteNotification } from '../../request/user';
 
 function getIcon(type) {
@@ -41,13 +42,12 @@ export default function Notification({ notification, refreshUser, userId }) {
       refreshUser();
     }, 1000);
   }
-
   return (
     <div className="notification" style={{ opacity }}>
       {getIcon(type)}
       <h5 className="notification-name">{name}</h5>
       <p className="notification-description"> {description}</p>
-      <p className="notification-date">{new Date().toLocaleDateString()}</p>
+      <p className="notification-date">{moment(new Date(date)).fromNow()}</p>
       <DoneOutlineIcon
         className="notification-done blue-icon"
         onClick={handleDeleteNotification}

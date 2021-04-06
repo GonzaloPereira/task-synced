@@ -19,7 +19,8 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
   const { refreshUser } = useAuth();
   const mounted = useRef(false);
 
-  async function handleSubmit() {
+  async function handleSubmit(event) {
+    event.preventDefault();
     if (!formData.name) {
       return setError('Empty name not allowed');
     }
@@ -31,7 +32,11 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
       setLoading(true);
 
       // create task and give teamId
-      const res = await createTaskForTeam(currTeam._id, formData);
+      const task = {
+        ...formData,
+        date: moment(formData.date).toISOString(),
+      };
+      const res = await createTaskForTeam(currTeam._id, task);
       if (!res.ok) throw new Error();
       await close();
       await refreshUser();
@@ -42,12 +47,6 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
     if (mounted.current) {
       setLoading(false);
     }
-  }
-  function prevSubmit(event) {
-    event.preventDefault();
-    setFormData({ date: moment(formData.date).toDate }, () => {
-      handleSubmit();
-    });
   }
   useEffect(() => {
     mounted.current = true;
@@ -61,7 +60,6 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
       value: event.target.value,
     });
   }
-  console.log(moment(formData.date).toDate());
   return (
     <Popup close={close}>
       <h2>Create new Task</h2>
