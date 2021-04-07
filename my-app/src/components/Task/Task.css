@@ -25,6 +25,9 @@
   margin: 0 5px;
   text-align: center;
 }
+.task p {
+  margin: 0;
+}
 .task-button:hover {
   opacity: 0.8;
   cursor: pointer;
