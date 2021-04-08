@@ -1,8 +1,7 @@
 const Team = require('../models/teamModel');
 const User = require('../models/userModel');
-const Notification = require('../models/notificationModel');
 const Task = require('../models/taskModel');
-const sendNotifications = require('../external/notification');
+const addNotification = require('../external/addNotification');
 
 exports.getTasks = (req, res) => {
   Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
@@ -31,21 +30,16 @@ exports.postTask = async (req, res) => {
 
     const { members } = team;
     const membersId = members.map((member) => member._id);
-    const newNotification = new Notification({
-      name: `Your team "${team.name}"`,
-      description: `has added a new task "${newTask.name}"`,
-      date: new Date(),
-      type: 1,
-    });
 
     await User.updateMany(
       { _id: membersId },
-      { $push: { tasks: newTask, notifications: newNotification } }
+      { $push: { tasks: newTask } }
     ).exec();
 
-    sendNotifications(
-      membersId,
-      `A new task has been added to your team "${team.name}"`
+    addNotification(
+      { teamName: team.name, taskName: newTask.name },
+      membersId.filter((member) => String(member._id) !== String(req.user._id)),
+      1
     );
 
     res.send('Sucessfully added task');
@@ -74,28 +68,22 @@ exports.deleteTaskWithId = async (req, res) => {
     ).exec();
 
     const { members, tasks } = team;
-    const { name: taskName } = tasks.find(
+    const deletedTask = tasks.find(
       (task) => String(task._id) === req.params.taskId
     );
     const membersId = members.map((member) => member._id);
-    const newNotification = new Notification({
-      name: `Your team "${team.name}"`,
-      description: `has completed a task "${taskName}"`,
-      date: new Date(),
-      type: 2,
-    });
 
     await User.updateMany(
       { _id: membersId },
       {
         $pull: { tasks: { _id: req.params.taskId } },
-        $push: { notifications: newNotification },
       }
     ).exec();
 
-    sendNotifications(
-      membersId,
-      `Your team "${team.name}" has completed a task`
+    addNotification(
+      { teamName: team.name, taskName: deletedTask.name },
+      membersId.filter((member) => String(member._id) !== String(req.user._id)),
+      2
     );
 
     res.send('Sucessfully deleted the task');

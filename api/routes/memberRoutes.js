@@ -1,7 +1,6 @@
 const Team = require('../models/teamModel');
 const User = require('../models/userModel');
-const Notification = require('../models/notificationModel');
-const sendNotifications = require('../external/notification');
+const addNotification = require('../external/addNotification');
 
 exports.getMembers = (req, res) => {
   Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
@@ -23,27 +22,21 @@ exports.postMember = async (req, res) => {
       { new: true }
     ).exec();
 
-    const { tasks: newTasks, name: teamName } = team;
-    const newNotification = new Notification({
-      name: `You have been added to the team`,
-      description: `"${teamName}"`,
-      date: new Date(),
-      type: 3,
-    });
+    const { tasks: newTasks } = team;
     await User.updateOne(
       { _id: newMember._id },
       {
         $push: {
           tasks: { $each: newTasks },
-          teams: { _id: req.params.teamId, name: teamName },
-          notifications: newNotification,
+          teams: { _id: req.params.teamId, name: team.name },
         },
       }
     ).exec();
 
-    sendNotifications(
-      [newMember._id],
-      `You have been added to the team "${teamName}"`
+    addNotification(
+      { teamName: team.name },
+      [String(newMember._id) === String(req.user._id) ? '' : newMember._id],
+      3
     );
 
     res.send('Sucessfully added member');
