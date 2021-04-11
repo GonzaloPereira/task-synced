@@ -60,6 +60,33 @@ exports.getTaskWithId = (req, res) => {
   });
 };
 
+exports.patchTask = async (req, res) => {
+  try {
+    const changes = req.body;
+    const updateObj = {};
+    Object.keys(changes).forEach((key) => {
+      updateObj[`tasks.$.${key}`] = changes[key];
+    });
+
+    const team = await Team.findOneAndUpdate(
+      { _id: req.params.teamId, 'tasks._id': req.params.taskId },
+      { $set: updateObj }
+    ).exec();
+
+    const { members } = team;
+    const membersId = members.filter((member) => member._id);
+
+    await User.updateMany(
+      { _id: membersId, 'tasks._id': req.params.taskId },
+      { $set: updateObj }
+    ).exec();
+
+    res.send('Sucessfully updated the task');
+  } catch (err) {
+    res.send(err);
+  }
+};
+
 exports.deleteTaskWithId = async (req, res) => {
   try {
     const team = await Team.findOneAndUpdate(

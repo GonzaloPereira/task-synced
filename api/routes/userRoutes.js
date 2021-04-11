@@ -36,16 +36,28 @@ exports.getUserWithId = (req, res) => {
     }
   });
 };
+const Team = require('../models/teamModel');
 
-exports.patchUserWithId = (req, res) => {
-  const changes = req.body;
-  User.updateOne({ _id: req.params.userId }, { $set: changes }, (err) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send('Sucessfully updated the user');
-    }
-  });
+exports.patchUserWithId = async (req, res) => {
+  try {
+    const { name: newName } = req.body;
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $set: { name: newName } }
+    ).exec();
+    const { teams } = user;
+    const teamsId = teams.map((team) => team._id);
+
+    await Team.updateMany(
+      { _id: teamsId, 'members._id': req.params.userId },
+      {
+        $set: { 'members.$.name': newName },
+      }
+    ).exec();
+    res.send('Sucessfully edited the user');
+  } catch (err) {
+    res.send(err);
+  }
 };
 
 exports.deleteUserWithId = (req, res) => {

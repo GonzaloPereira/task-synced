@@ -11,7 +11,7 @@ const app = express();
 // App
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'build')));
+// app.use(express.static(path.join(__dirname, 'build')));
 app.use(
   session({
     secret: 'Secret',
@@ -23,8 +23,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Mongoose connection
-// const url = 'mongodb://localhost:27017/TaskSyncedDB';
-const url = process.env.MONGODB_CONNECTION_URL;
+const url = 'mongodb://localhost:27017/TaskSyncedDB';
+// const url = process.env.MONGODB_CONNECTION_URL;
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set('useCreateIndex', true);
 
@@ -63,6 +63,7 @@ app // eslint-disable-next-line prettier/prettier
 app
   .route('/api/teams/:teamId')
   .get(teamRoutes.getTeamWithId)
+  .patch(teamRoutes.editTeamWithId)
   .delete(teamRoutes.deleteTeamWithId);
 
 // Task routes
@@ -76,6 +77,7 @@ app
 app
   .route('/api/teams/:teamId/tasks/:taskId')
   .get(taskRoutes.getTaskWithId)
+  .patch(taskRoutes.patchTask)
   .delete(taskRoutes.deleteTaskWithId);
 
 // Member routes

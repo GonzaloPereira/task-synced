@@ -10,6 +10,7 @@ export default function TaskContainer({
   refreshTeam,
   editable,
   userIsAdmin,
+  taskEditMode,
 }) {
   const { refreshUser } = useAuth();
   async function deleteTask(taskId) {
@@ -28,8 +29,11 @@ export default function TaskContainer({
           {idx !== 0 && <hr className="dark-separator-line" />}
           <Task
             task={task}
+            teamId={teamId}
             userIsAdmin={userIsAdmin}
+            refreshTeam={refreshTeam}
             deleteTask={deleteTask}
+            taskEditMode={taskEditMode}
             editable={editable}
           />
         </div>

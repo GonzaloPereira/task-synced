@@ -1,17 +1,30 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import './Profile.css';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import EditIcon from '@material-ui/icons/Edit';
+import EditProfile from './EditProfile';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Profile() {
-  const { logout, currentUser } = useAuth();
+  const { logout, currentUser, refreshUser } = useAuth();
   const { name, username: email, _id: ID } = currentUser;
+  const [showEditProfile, toggleShowEditProfile] = useReducer(
+    (state) => !state,
+    false,
+  );
+
   function handleLogout() {
     logout();
   }
   return (
     <div className="profile">
-      <h2>My Profile</h2>
+      <div className="profile-title">
+        <h2>My Profile</h2>
+        <EditIcon
+          className="profile-edit-button"
+          onClick={toggleShowEditProfile}
+        />
+      </div>
       <div className="profile-pic">
         <AccountCircleIcon fontSize="inherit" />
       </div>
@@ -24,6 +37,14 @@ export default function Profile() {
       <button className="logout-button" type="button" onClick={handleLogout}>
         Log out
       </button>
+
+      {showEditProfile && (
+        <EditProfile
+          close={toggleShowEditProfile}
+          userId={currentUser._id}
+          refreshUser={refreshUser}
+        />
+      )}
     </div>
   );
 }

@@ -21,13 +21,18 @@ export default function Member({
   );
   const [showErrorAdminStatus, setShowErrorAdminStatus] = useState(false);
 
+  const errTimeoutId = useRef('');
+
+  function errHandleAdminStatusChange() {
+    setShowErrorAdminStatus(true);
+    errTimeoutId.current = setTimeout(() => {
+      setShowErrorAdminStatus(false);
+    }, 2000);
+  }
+
   const timeoutId = useRef('');
   const intervalId = useRef('');
   const [opacity, setOpacity] = useState(1);
-  // eslint-disable-next-line arrow-body-style
-  useEffect(() => {
-    return () => clearInterval(intervalId);
-  }, []);
 
   function cancelDelete() {
     clearTimeout(timeoutId.current);
@@ -36,6 +41,11 @@ export default function Member({
   }
 
   function callForDelete() {
+    if (numAdmins === 1 && memberIsAdmin) {
+      errHandleAdminStatusChange();
+      return;
+    }
+    toggleIsDeleted();
     intervalId.current = setInterval(() => {
       setOpacity((prevOpacity) => prevOpacity - 0.025);
     }, 50);
@@ -43,19 +53,7 @@ export default function Member({
       deleteMember(memberId);
     }, 2000);
   }
-  const errTimeoutId = useRef('');
-  function errHandleAdminStatusChange() {
-    setShowErrorAdminStatus(true);
-    errTimeoutId.current = setTimeout(() => {
-      setShowErrorAdminStatus(false);
-    }, 2000);
-  }
-  // eslint-disable-next-line arrow-body-style
-  useEffect(() => {
-    return () => {
-      clearTimeout(errTimeoutId.current);
-    };
-  }, []);
+
   function handleAdminStatusChange() {
     toggleShowAdminStatus();
     if (numAdmins === 1 && memberIsAdmin) {
@@ -65,6 +63,15 @@ export default function Member({
     toggleAdmin(teamId, memberId);
     refreshTeam();
   }
+
+  // eslint-disable-next-line arrow-body-style
+  useEffect(() => {
+    return () => {
+      clearInterval(intervalId.current);
+      clearTimeout(errTimeoutId.current);
+    };
+  }, []);
+
   return (
     <div className="member" style={{ opacity }}>
       <PersonIcon />
@@ -79,7 +86,7 @@ export default function Member({
       )}
       {showErrorAdminStatus && (
         <div className="admin-status">
-          <ErrorOutlineIcon className="red" />
+          <ErrorOutlineIcon className="red-icon" />
           <h6>Team needs at least one admin</h6>
         </div>
       )}
@@ -87,19 +94,16 @@ export default function Member({
         <>
           {isDeleted ? (
             <RestoreIcon
-              className="task-button"
-              style={{ color: 'e84545' }}
-              onClick={async (e) => {
+              className="task-button red-icon"
+              onClick={() => {
                 toggleIsDeleted();
                 cancelDelete();
               }}
             />
           ) : (
             <RemoveCircleOutlineIcon
-              className="member-button"
-              style={{ color: 'e84545' }}
+              className="member-button red-icon"
               onClick={() => {
-                toggleIsDeleted();
                 callForDelete(memberId);
               }}
             />

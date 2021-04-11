@@ -37,6 +37,16 @@ export async function createTeam(team, user) {
   return toggleAdmin(teamId, user._id);
 }
 
+export async function editTeam(data, teamId) {
+  return fetch(`/api/teams/${teamId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+}
+
 export async function createTaskForTeam(teamId, task) {
   return fetch(`/api/teams/${teamId}/tasks`, {
     method: 'POST',
@@ -47,6 +57,15 @@ export async function createTaskForTeam(teamId, task) {
   });
 }
 
+export async function editTaskForTeam(teamId, taskId, data) {
+  return fetch(`/api/teams/${teamId}/tasks/${taskId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+}
 export async function deleteTaskForTeam(teamId, taskId) {
   return fetch(`/api/teams/${teamId}/tasks/${taskId}`, {
     method: 'DELETE',

@@ -33,7 +33,7 @@ exports.postMember = async (req, res) => {
       }
     ).exec();
 
-    addNotification(
+    await addNotification(
       { teamName: team.name },
       [String(newMember._id) === String(req.user._id) ? '' : newMember._id],
       3

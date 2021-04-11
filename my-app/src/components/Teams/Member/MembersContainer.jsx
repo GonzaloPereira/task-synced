@@ -10,6 +10,7 @@ export default function MembersContainer({
   refreshTeam,
   userIsAdmin,
   numAdmins,
+  style,
 }) {
   const { refreshUser } = useAuth();
   async function deleteMember(userId) {
@@ -22,7 +23,7 @@ export default function MembersContainer({
     }
   }
   return (
-    <div className="members-container">
+    <div className="members-container" style={style}>
       {members.map((member, idx) => (
         <div key={member._id}>
           {idx !== 0 && <hr className="dark-separator-line" />}

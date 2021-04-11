@@ -8,15 +8,26 @@ import CheckIcon from '@material-ui/icons/Check';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import RestoreIcon from '@material-ui/icons/Restore';
+import EditIcon from '@material-ui/icons/Edit';
+import EditTask from './EditTask';
 import useWindowDimensions from '../extra/WindowDimensions';
 
-export default function Task({ task, editable, deleteTask, userIsAdmin }) {
+export default function Task({
+  task,
+  teamId,
+  refreshTeam,
+  editable,
+  deleteTask,
+  taskEditMode,
+  userIsAdmin,
+}) {
   const { _id: taskId, name, description, date: stringDate } = task;
   const { width } = useWindowDimensions();
   const [responsiveStyle, setResponsiveStyle] = useState();
   const [showArrow, setShowArrow] = useState(false);
   const [dropDescrip, setDropDescrip] = useReducer((st) => !st, false);
   const [isDone, toggleIsDone] = useReducer((st) => !st, false);
+  const [showEditTask, toggleShowEditTask] = useReducer((st) => !st, false);
   const showOptions =
     (editable && width > 700) || (width <= 700 && dropDescrip && editable);
   const date = stringDate ? new Date(stringDate) : '';
@@ -46,8 +57,7 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
         });
       }
     }
-  }, [width, dropDescrip]);
-
+  }, [width, dropDescrip, stringDate]);
   const timeoutId = useRef('');
   const intervalId = useRef('');
   const [opacity, setOpacity] = useState(1);
@@ -74,74 +84,99 @@ export default function Task({ task, editable, deleteTask, userIsAdmin }) {
     }, 2000);
   }
   return (
-    <div
-      className="task"
-      onMouseOver={() => setShowArrow(true)}
-      onMouseOut={() => setShowArrow(false)}
-      onClick={() => setDropDescrip(true)}
-      style={{ ...responsiveStyle, opacity }}
-    >
-      {showArrow || dropDescrip ? (
-        <>{dropDescrip ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} </>
-      ) : (
-        <>
-          {isDone ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon />}{' '}
-        </>
-      )}
-      <h4
-        style={{
-          gridColumn: dropDescrip && editable && width <= 700 ? '2/7' : '2/3',
-        }}
+    <>
+      <div
+        className="task"
+        onMouseOver={() => setShowArrow(true)}
+        onMouseOut={() => setShowArrow(false)}
+        onClick={() => setDropDescrip(true)}
+        style={{ ...responsiveStyle, opacity }}
       >
-        {name}
-      </h4>
-      {(date || (editable && dropDescrip && width <= 700)) && (
-        <>
-          <CalendarTodayIcon />
-          <h5 style={{ color: pastDate ? '#e84545' : 'white' }}>
-            {date
-              ? moment(date).calendar(null, {
-                  sameElse: 'dddd MMMM h:mm A',
-                })
-              : ''}
-          </h5>
-        </>
-      )}
-      {showOptions && userIsAdmin && (
-        <>
-          {!isDone ? (
-            <CheckIcon
-              className="task-button blue-icon"
-              onMouseOver={(e) => e.stopPropagation()}
-              onMouseOut={(e) => e.stopPropagation()}
-              onClick={async (e) => {
-                e.stopPropagation();
-                toggleIsDone();
-                callForDelete();
-              }}
-            />
-          ) : (
-            <RestoreIcon
-              className="task-button red-icon"
-              onMouseOver={(e) => e.stopPropagation()}
-              onMouseOut={(e) => e.stopPropagation()}
-              onClick={async (e) => {
-                e.stopPropagation();
-                toggleIsDone();
-                cancelDelete();
-              }}
-            />
-          )}
-        </>
-      )}
-      {dropDescrip && (
-        <div
-          className="task-description"
-          style={{ color: description ? 'white' : 'gray' }}
+        {showArrow || dropDescrip ? (
+          <>{dropDescrip ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} </>
+        ) : (
+          <>
+            {isDone ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon />}{' '}
+          </>
+        )}
+        <h4
+          style={{
+            gridColumn: dropDescrip && editable && width <= 700 ? '2/7' : '2/3',
+          }}
         >
-          <p>{description ?? 'No description'}</p>
-        </div>
+          {name}
+        </h4>
+        {(date || (editable && dropDescrip && width <= 700)) && (
+          <>
+            <CalendarTodayIcon />
+            <h5 style={{ color: pastDate ? '#e84545' : 'white' }}>
+              {date
+                ? moment(date).calendar(null, {
+                    sameElse: 'dddd MMMM h:mm A',
+                  })
+                : ''}
+            </h5>
+          </>
+        )}
+        {showOptions && userIsAdmin && (
+          <>
+            {!isDone ? (
+              <>
+                {taskEditMode ? (
+                  <EditIcon
+                    className="task-button"
+                    onMouseOver={(e) => e.stopPropagation()}
+                    onMouseOut={(e) => e.stopPropagation()}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      toggleShowEditTask();
+                    }}
+                  />
+                ) : (
+                  <CheckIcon
+                    className="task-button blue-icon"
+                    onMouseOver={(e) => e.stopPropagation()}
+                    onMouseOut={(e) => e.stopPropagation()}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      toggleIsDone();
+                      callForDelete();
+                    }}
+                  />
+                )}
+              </>
+            ) : (
+              <RestoreIcon
+                className="task-button red-icon"
+                onMouseOver={(e) => e.stopPropagation()}
+                onMouseOut={(e) => e.stopPropagation()}
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  toggleIsDone();
+                  cancelDelete();
+                }}
+              />
+            )}
+          </>
+        )}
+
+        {dropDescrip && (
+          <div
+            className="task-description"
+            style={{ color: description ? 'white' : 'gray' }}
+          >
+            <p>{description ?? 'No description'}</p>
+          </div>
+        )}
+      </div>
+      {showEditTask && (
+        <EditTask
+          taskId={taskId}
+          teamId={teamId}
+          refreshTeam={refreshTeam}
+          close={toggleShowEditTask}
+        />
       )}
-    </div>
+    </>
   );
 }
