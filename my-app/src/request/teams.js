@@ -47,6 +47,12 @@ export async function editTeam(data, teamId) {
   });
 }
 
+export async function deleteTeam(teamId) {
+  return fetch(`/api/teams/${teamId}`, {
+    method: 'DELETE',
+  });
+}
+
 export async function createTaskForTeam(teamId, task) {
   return fetch(`/api/teams/${teamId}/tasks`, {
     method: 'POST',

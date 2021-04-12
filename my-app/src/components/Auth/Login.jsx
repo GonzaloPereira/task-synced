@@ -51,7 +51,9 @@ export default function Login() {
           <p>Password</p>
           <input type="password" ref={password} id="password" />
         </label>
-        <button type="submit">Log In</button>
+        <button className="blue-submit-button" type="submit">
+          Log In
+        </button>
         <p>
           {"Don't have and account yet?"}{' '}
           <Link to="/signup" style={{ color: '#00adb5' }}>

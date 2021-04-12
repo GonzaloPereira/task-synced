@@ -66,7 +66,9 @@ export default function JoinTeam({ close }) {
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Join</button>
+        <button className="blue-submit-button" type="submit">
+          Join
+        </button>
       </form>
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}

@@ -76,7 +76,7 @@ export default function Signup() {
           <p>Name</p>
           <input type="text" ref={name} id="name" />
         </label>
-        <button disabled={loading} type="submit">
+        <button className="blue-submit-button" disabled={loading} type="submit">
           Sign Up
         </button>
         <p>

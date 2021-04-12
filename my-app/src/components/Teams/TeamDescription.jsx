@@ -9,6 +9,8 @@ import AddTask from '../Task/AddTask';
 import MembersContainer from './Member/MembersContainer';
 import AddMember from './Member/AddMember';
 import EditTeam from './EditTeam';
+import DeleteTeam from './DeleteTeam';
+import LeaveTeam from './LeaveTeam';
 import useWindowDimensions from '../extra/WindowDimensions';
 
 function TeamDescription({
@@ -29,6 +31,8 @@ function TeamDescription({
   const [showAddTask, toggleShowAddTask] = useReducer((st) => !st, false);
   const [showAddMember, toggleShowAddMember] = useReducer((st) => !st, false);
   const [showEditTeam, toggleShowEditTeam] = useReducer((st) => !st, false);
+  const [showDeleteTeam, toggleShowDeleteTeam] = useReducer((st) => !st, false);
+  const [showLeaveTeam, toggleShowLeaveTeam] = useReducer((st) => !st, false);
   const [taskEditMode, toogleTaskEditMode] = useReducer((st) => !st, false);
   const { width } = useWindowDimensions();
   const numAdmins = members.reduce((acc, curr) => acc + curr.isAdmin, 0);
@@ -90,7 +94,36 @@ function TeamDescription({
           <h5>Add new member</h5>
         </div>
       )}
+      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+        {userIsAdmin && (
+          <>
+            <div className="team-edit-buttons">
+              <Button variant="outlined" onClick={toggleShowEditTeam}>
+                Edit Team
+              </Button>
+            </div>
 
+            <div className="team-edit-buttons">
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={toggleShowDeleteTeam}
+              >
+                Delete Team
+              </Button>
+            </div>
+          </>
+        )}
+        <div className="team-edit-buttons">
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={toggleShowLeaveTeam}
+          >
+            Leave Team
+          </Button>
+        </div>
+      </div>
       {showAddTask && (
         <AddTask
           close={toggleShowAddTask}
@@ -98,11 +131,7 @@ function TeamDescription({
           refreshTeam={refreshTeam}
         />
       )}
-      <div className="team-edit-buttons">
-        <Button variant="outlined" onClick={toggleShowEditTeam}>
-          Edit Team
-        </Button>
-      </div>
+
       {showAddMember && (
         <AddMember
           close={toggleShowAddMember}
@@ -117,10 +146,19 @@ function TeamDescription({
           refreshTeam={refreshTeam}
         />
       )}
+      {showDeleteTeam && (
+        <DeleteTeam
+          close={toggleShowDeleteTeam}
+          resetTeams={resetTeams}
+          currTeam={currTeam}
+        />
+      )}
+      {showLeaveTeam && (
+        <LeaveTeam close={toggleShowLeaveTeam} currTeam={currTeam} />
+      )}
       {width <= 700 && (
         <h2 className="responsive-teams-button" onClick={resetTeams}>
-          {' '}
-          Teams{' '}
+          Teams
         </h2>
       )}
     </div>

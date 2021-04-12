@@ -13,7 +13,9 @@ function formReducer(state, event) {
   };
 }
 export default function EditTask({ close, teamId, refreshTeam, taskId }) {
-  const [formData, setFormData] = useReducer(formReducer, {});
+  const [formData, setFormData] = useReducer(formReducer, {
+    changeDate: false,
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { refreshUser } = useAuth();
@@ -34,8 +36,8 @@ export default function EditTask({ close, teamId, refreshTeam, taskId }) {
         ...formData,
         date: formData.date ? moment(formData.date).toISOString() : '',
       };
-      if (!formData.changeDate) delete formData.date;
-      delete formData.changeDate;
+      if (!task.changeDate) delete task.date;
+      delete task.changeDate;
       const res = await editTaskForTeam(teamId, taskId, task);
       if (!res.ok) throw new Error();
       await close();
@@ -57,7 +59,10 @@ export default function EditTask({ close, teamId, refreshTeam, taskId }) {
   function handleChange(event) {
     setFormData({
       name: event.target.name,
-      value: event.target.value,
+      value:
+        event.target.type === 'checkbox'
+          ? event.target.checked
+          : event.target.value,
     });
   }
   return (
@@ -111,7 +116,9 @@ export default function EditTask({ close, teamId, refreshTeam, taskId }) {
             max="2022-01-01"
           />
         </label>
-        <button type="submit">Edit task</button>
+        <button className="blue-submit-button" type="submit">
+          Edit task
+        </button>
       </form>
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}

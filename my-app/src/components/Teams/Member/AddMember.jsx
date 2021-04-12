@@ -68,7 +68,9 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Add member</button>
+        <button className="blue-submit-button" type="submit">
+          Add member
+        </button>
         <p>{"Or send him this team's ID"}</p>
         <div className="add-member-team-id">{currTeam._id}</div>
       </form>

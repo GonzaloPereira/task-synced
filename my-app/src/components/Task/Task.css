@@ -2,7 +2,6 @@
   background-color: #222831;
   border-radius: 5px 5px 0px 0px;
   color: white;
-  width: 95%;
 }
 .task {
   border-radius: 5px;
@@ -24,6 +23,7 @@
 .task h5 {
   margin: 0 5px;
   text-align: center;
+  overflow-wrap: break-word;
 }
 .task p {
   margin: 0;
@@ -51,7 +51,6 @@
   grid-template-rows: 2.2rem;
   width: 10rem;
   border-radius: 0px 0px 5px 5px;
-  margin-bottom: 30px;
 }
 
 .add-task > * {
@@ -70,7 +69,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 95%;
+  margin-bottom: 30px;
 }
 .dark-separator-line {
   border: none;
@@ -92,7 +91,13 @@
     justify-self: left;
     color: white;
   }
-  .task-description {
-    font-size: 0.7rem;
+  .task p {
+    font-size: 0.8rem;
+  }
+}
+@media only screen and (max-width: 800px) {
+  .config-tasks {
+    background-color: #222831;
+    border-radius: 0px 0px 5px 5px;
   }
 }

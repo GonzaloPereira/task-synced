@@ -17,6 +17,9 @@
   font-size: 2rem;
   margin: 1rem;
 }
+.form h3 {
+  text-align: center;
+}
 .form input {
   box-sizing: border-box;
   width: 100%;
@@ -29,7 +32,7 @@
   position: relative;
   top: 10px;
 }
-.form button {
+.blue-submit-button {
   display: block;
   text-align: center;
   margin: auto;
@@ -42,8 +45,10 @@
   color: white;
   font-size: 1.2rem;
 }
+.blue-submit-button:hover {
+  opacity: 0.8;
+}
 .form button:hover {
-  opacity: 0.6;
   cursor: pointer;
 }
 .form textarea {
@@ -56,4 +61,14 @@
 .join {
   text-align: center;
   text-decoration: none;
+}
+
+.red-submit-button {
+  display: block;
+  text-align: center;
+  margin: auto;
+  margin-top: 1.5rem;
+  width: 100%;
+  height: 2.5rem;
+  font-size: 1.2rem;
 }

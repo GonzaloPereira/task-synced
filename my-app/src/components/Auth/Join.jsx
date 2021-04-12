@@ -7,10 +7,14 @@ export default function Join() {
     <div className="join form">
       <h1>Join the community!</h1>
       <Link to="/login" style={{ textDecoration: 'none' }}>
-        <button type="button">Log In</button>
+        <button className="blue-submit-button" type="button">
+          Log In
+        </button>
       </Link>
       <Link to="/signup" style={{ textDecoration: 'none' }}>
-        <button type="button">Sign up</button>
+        <button className="blue-submit-button" type="button">
+          Sign up
+        </button>
       </Link>
     </div>
   );

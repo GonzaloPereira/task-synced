@@ -1,3 +1,4 @@
+/* eslint-disable no-lonely-if */
 import React, { useState, useReducer, useEffect, useRef } from 'react';
 import './Task.css';
 import moment from 'moment';
@@ -37,22 +38,23 @@ export default function Task({
   useEffect(() => {
     if (!editable) {
       setResponsiveStyle({
-        gridTemplateColumns: `50px 5fr ${date ? '30px minmax(120px,1fr)' : ''}`,
+        gridTemplateColumns: `50px 5fr ${
+          date ? `30px ${width <= 700 ? '130px' : '160px'}` : ''
+        }`,
       });
     } else {
-      // eslint-disable-next-line no-lonely-if
       if (width <= 700) {
         setResponsiveStyle({
           gridTemplateColumns: dropDescrip
             ? '50px 5fr 40px'
-            : `50px 5fr ${date ? '40px minmax(120px,1fr)' : ''}`,
+            : `50px 5fr ${date ? '40px 130px' : ''}`,
           gridTemplateRows: dropDescrip
             ? 'minmax(2.5rem, auto) 2rem  auto'
             : 'minmax(2.5rem, auto) auto',
         });
       } else {
         setResponsiveStyle({
-          gridTemplateColumns: `50px 5fr ${date ? '50px 1fr' : ''} 50px`,
+          gridTemplateColumns: `50px 5fr ${date ? '50px 160px' : ''} 50px`,
           gridTemplateRows: 'minmax(2.5rem, auto) auto',
         });
       }
@@ -92,11 +94,29 @@ export default function Task({
         onClick={() => setDropDescrip(true)}
         style={{ ...responsiveStyle, opacity }}
       >
-        {showArrow || dropDescrip ? (
-          <>{dropDescrip ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} </>
+        {taskEditMode ? (
+          <EditIcon
+            className="task-button"
+            onMouseOver={(e) => e.stopPropagation()}
+            onMouseOut={(e) => e.stopPropagation()}
+            onClick={async (e) => {
+              e.stopPropagation();
+              toggleShowEditTask();
+            }}
+          />
         ) : (
           <>
-            {isDone ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon />}{' '}
+            {showArrow || dropDescrip ? (
+              <>{dropDescrip ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} </>
+            ) : (
+              <>
+                {isDone ? (
+                  <RadioButtonCheckedIcon />
+                ) : (
+                  <RadioButtonUncheckedIcon />
+                )}{' '}
+              </>
+            )}
           </>
         )}
         <h4
@@ -121,30 +141,16 @@ export default function Task({
         {showOptions && userIsAdmin && (
           <>
             {!isDone ? (
-              <>
-                {taskEditMode ? (
-                  <EditIcon
-                    className="task-button"
-                    onMouseOver={(e) => e.stopPropagation()}
-                    onMouseOut={(e) => e.stopPropagation()}
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      toggleShowEditTask();
-                    }}
-                  />
-                ) : (
-                  <CheckIcon
-                    className="task-button blue-icon"
-                    onMouseOver={(e) => e.stopPropagation()}
-                    onMouseOut={(e) => e.stopPropagation()}
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      toggleIsDone();
-                      callForDelete();
-                    }}
-                  />
-                )}
-              </>
+              <CheckIcon
+                className="task-button blue-icon"
+                onMouseOver={(e) => e.stopPropagation()}
+                onMouseOut={(e) => e.stopPropagation()}
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  toggleIsDone();
+                  callForDelete();
+                }}
+              />
             ) : (
               <RestoreIcon
                 className="task-button red-icon"

@@ -97,7 +97,9 @@ export default function AddTask({ close, currTeam, refreshTeam }) {
             max="2022-01-01"
           />
         </label>
-        <button type="submit">Add task</button>
+        <button className="blue-submit-button" type="submit">
+          Add task
+        </button>
       </form>
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}

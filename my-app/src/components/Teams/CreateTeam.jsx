@@ -78,7 +78,9 @@ export default function CreateTeam({ close }) {
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Create</button>
+        <button className="blue-submit-button" type="submit">
+          Create
+        </button>
       </form>
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}

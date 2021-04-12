@@ -78,7 +78,9 @@ export default function EditTeam({ close, currTeamId, refreshTeam }) {
             placeholder="Leave blank for no changes"
           />
         </label>
-        <button type="submit">Edit</button>
+        <button className="blue-submit-button" type="submit">
+          Edit
+        </button>
       </form>
       <br />
       {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}

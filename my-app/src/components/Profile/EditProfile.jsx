@@ -53,7 +53,9 @@ export default function EditProfile({ close, userId, refreshUser }) {
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Edit user</button>
+        <button className="blue-submit-button" type="submit">
+          Edit user
+        </button>
       </form>
 
       <br />

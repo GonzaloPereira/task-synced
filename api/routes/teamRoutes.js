@@ -58,12 +58,27 @@ exports.editTeamWithId = async (req, res) => {
   }
 };
 
-exports.deleteTeamWithId = (req, res) => {
-  Team.deleteOne({ _id: req.params.teamId }, (err) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send('Succesfully deteled the team');
-    }
-  });
+exports.deleteTeamWithId = async (req, res) => {
+  try {
+    const deletedTeam = await Team.findOneAndDelete({
+      _id: req.params.teamId,
+    }).exec();
+
+    const { members, tasks } = deletedTeam;
+    const membersId = members.map((member) => member._id);
+
+    await User.updateMany(
+      { _id: membersId },
+      {
+        $pull: {
+          tasks: { $in: tasks },
+          teams: { _id: deletedTeam._id, name: deletedTeam.name },
+        },
+      }
+    ).exec();
+
+    res.send('Sucessfully deleted team');
+  } catch (err) {
+    res.send(err);
+  }
 };

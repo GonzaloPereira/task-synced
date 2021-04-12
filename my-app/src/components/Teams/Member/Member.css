@@ -2,7 +2,6 @@
   background-color: #222831;
   border-radius: 5px 5px 5px 0px;
   color: white;
-  width: 95%;
 }
 .member {
   display: grid;
@@ -29,7 +28,7 @@
   grid-template-rows: 2.2rem;
   width: 12rem;
   border-radius: 0px 0px 5px 5px;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 .add-member > * {
