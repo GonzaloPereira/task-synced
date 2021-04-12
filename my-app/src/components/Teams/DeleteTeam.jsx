@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from '@material-ui/core/Button';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Alert from '@material-ui/lab/Alert';
 import Popup from '../extra/Popup';
 import { deleteTeam } from '../../request/teams';
 
@@ -13,8 +15,7 @@ export default function DeleteTeam({ close, currTeam, resetTeams }) {
       setError('');
       setLoading(true);
       // Delete team with teamId : currTeam._id
-      const res = deleteTeam(currTeam._id);
-      if (!res.ok) throw new Error();
+      await deleteTeam(currTeam._id);
       await close();
       await resetTeams();
     } catch (err) {
@@ -44,6 +45,8 @@ export default function DeleteTeam({ close, currTeam, resetTeams }) {
           Yes, delete team
         </Button>
       </form>
+      {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
+      {error && <Alert severity="error">{error}</Alert>}
     </Popup>
   );
 }

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from '@material-ui/core/Button';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Alert from '@material-ui/lab/Alert';
 import Popup from '../extra/Popup';
 import { useAuth } from '../contexts/AuthContext';
-import { removeMember } from '../../request/teams';
+import { removeMember, deleteTeam } from '../../request/teams';
 
-export default function LeaveTeam({ close, currTeam }) {
-  const { currentUser, refreshUser } = useAuth();
+export default function LeaveTeam({ close, currTeam, resetTeams, lastAdmin }) {
+  const { currentUser } = useAuth();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const mounted = useRef(false);
@@ -15,10 +17,10 @@ export default function LeaveTeam({ close, currTeam }) {
       setError('');
       setLoading(true);
       // Delete team with teamId : currTeam._id
-      const res = removeMember(currTeam._id, currentUser._id);
-      if (!res.ok) throw new Error();
+      if (lastAdmin) await deleteTeam(currTeam._id);
+      else await removeMember(currTeam._id, currentUser._id);
       await close();
-      await refreshUser();
+      await resetTeams();
     } catch (err) {
       setError('Failed to leave team');
     }
@@ -37,6 +39,7 @@ export default function LeaveTeam({ close, currTeam }) {
       <form onSubmit={handleSubmit}>
         <h3>{`Leave "${currTeam.name}"?`}</h3>
         <p>All tasks will be deleted for you</p>
+
         <Button
           variant="outlined"
           color="secondary"
@@ -45,7 +48,15 @@ export default function LeaveTeam({ close, currTeam }) {
         >
           Yes, leave team
         </Button>
+        {lastAdmin && (
+          <p className="red-icon">
+            You are the last member of the team, if you leave the team will be
+            deleted
+          </p>
+        )}
       </form>
+      {loading && <LinearProgress style={{ backgroundColor: '#0000' }} />}
+      {error && <Alert severity="error">{error}</Alert>}
     </Popup>
   );
 }

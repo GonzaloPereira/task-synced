@@ -19,6 +19,7 @@ exports.postTask = async (req, res) => {
     name: name,
     description: description,
     date: date,
+    ownerTeamId: req.params.teamId,
   });
 
   try {
@@ -80,6 +81,12 @@ exports.patchTask = async (req, res) => {
       { _id: membersId, 'tasks._id': req.params.taskId },
       { $set: updateObj }
     ).exec();
+
+    addNotification(
+      { teamName: team.name, taskName: changes.name },
+      membersId.filter((member) => String(member._id) !== String(req.user._id)),
+      4
+    );
 
     res.send('Sucessfully updated the task');
   } catch (err) {

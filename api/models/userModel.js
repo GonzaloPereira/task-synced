@@ -6,6 +6,7 @@ const taskSchema = new mongoose.Schema({
   name: String,
   description: String,
   date: Date,
+  ownerTeamId: String,
 });
 const notificationSchema = new mongoose.Schema({
   name: String,

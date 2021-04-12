@@ -2,6 +2,10 @@ export async function getTeam(teamId) {
   return fetch(`/api/teams/${teamId}`).then((res) => res.json());
 }
 
+export async function getTeamNameWithId(teamId) {
+  return fetch(`/api/teams/${teamId}/name`).then((res) => res.json());
+}
+
 export async function addMember(teamId, user) {
   const team = await getTeam(teamId);
   if (team.members.find((member) => String(member._id) === user._id))

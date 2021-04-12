@@ -1,8 +1,8 @@
 import React from 'react';
 import Member from './Member';
 import './Member.css';
-import { removeMember } from '../../../request/teams';
-import { useAuth } from '../../contexts/AuthContext';
+import { removeMember } from '../../request/teams';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function MembersContainer({
   members,

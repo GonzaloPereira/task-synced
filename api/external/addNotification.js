@@ -54,6 +54,26 @@ function notificationData(data, type) {
         name: `You have been added to the team`,
         description: `"${data.teamName}"`,
       };
+    case 4:
+      return {
+        name: `Your team "${data.teamName}"`,
+        description: `has edited the task "${data.taskName}"`,
+      };
+    case 5:
+      return {
+        name: `Your team "${data.teamName}"`,
+        description: 'has changed its information',
+      };
+    case 6:
+      return {
+        name: `You have been removed from the team`,
+        description: `"${data.teamName}"`,
+      };
+    case 7:
+      return {
+        name: `Your admin status has change for the team`,
+        description: `"${data.teamName}"`,
+      };
     default:
       return {
         name: `You have a new notification`,
@@ -69,6 +89,14 @@ function notifiticationMessage(teamName, type) {
       return `Your team "${teamName}" has completed a task`;
     case 3:
       return `You have been added to the team "${teamName}"`;
+    case 4:
+      return `Your team "${teamName}" has edited a task`;
+    case 5:
+      return `Your team "${teamName}" has changed its information`;
+    case 6:
+      return `You have been removed from the team "${teamName}"`;
+    case 7:
+      return `Your admin status has change for the team "${teamName}"`;
     default:
       return 'You have a new notification';
   }

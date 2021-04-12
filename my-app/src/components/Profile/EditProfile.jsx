@@ -4,8 +4,13 @@ import Alert from '@material-ui/lab/Alert';
 import Popup from '../extra/Popup';
 import { updateUser } from '../../request/user';
 
-export default function EditProfile({ close, userId, refreshUser }) {
-  const [name, setUsername] = useState('');
+export default function EditProfile({
+  close,
+  currentUserName,
+  currentUserId,
+  refreshUser,
+}) {
+  const [name, setUsername] = useState(currentUserName);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const mounted = useRef(false);
@@ -16,7 +21,7 @@ export default function EditProfile({ close, userId, refreshUser }) {
       setError('');
       setLoading(true);
       // call function to edit user
-      const res = await updateUser(userId, name);
+      const res = await updateUser(currentUserId, name);
       if (!res.ok) throw new Error();
       await close();
       await refreshUser();

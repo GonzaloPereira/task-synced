@@ -11,8 +11,8 @@ function formReducer(state, event) {
     [event.name]: event.value,
   };
 }
-export default function EditTeam({ close, currTeamId, refreshTeam }) {
-  const [formData, setFormData] = useReducer(formReducer, {});
+export default function EditTeam({ close, currTeam, refreshTeam }) {
+  const [formData, setFormData] = useReducer(formReducer, currTeam);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const mounted = useRef(false);
@@ -27,7 +27,7 @@ export default function EditTeam({ close, currTeamId, refreshTeam }) {
       setError('');
       setLoading(true);
       // create team and add user to team
-      const res = await editTeam(formData, currTeamId);
+      const res = await editTeam(formData, currTeam._id);
       if (!res.ok) throw new Error();
       await close();
       await refreshUser();

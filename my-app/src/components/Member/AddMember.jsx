@@ -2,9 +2,9 @@
 import React, { useState, useReducer, useRef, useEffect } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
-import { getUserWithId } from '../../../request/auth';
-import { addMember } from '../../../request/teams';
-import Popup from '../../extra/Popup';
+import { getUserWithId } from '../../request/auth';
+import { addMember } from '../../request/teams';
+import Popup from '../extra/Popup';
 
 function formReducer(state, event) {
   return {

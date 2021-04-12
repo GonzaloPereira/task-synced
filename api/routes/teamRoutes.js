@@ -31,7 +31,18 @@ exports.getTeamWithId = (req, res) => {
   });
 };
 
+exports.getTeamNameWithId = (req, res) => {
+  Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
+    if (err) {
+      res.send('');
+    } else {
+      res.json(foundTeam ? foundTeam.name : '');
+    }
+  });
+};
+
 const User = require('../models/userModel');
+const addNotification = require('../external/addNotification');
 
 exports.editTeamWithId = async (req, res) => {
   const changes = req.body;
@@ -51,6 +62,12 @@ exports.editTeamWithId = async (req, res) => {
       { _id: membersId, 'teams._id': req.params.teamId },
       { $set: { 'teams.$.name': team.name } }
     ).exec();
+
+    addNotification(
+      { teamName: team.name },
+      membersId.filter((member) => String(member._id) !== String(req.user._id)),
+      5
+    );
 
     res.send('Sucessfully edited Team');
   } catch (err) {

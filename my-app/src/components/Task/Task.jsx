@@ -12,6 +12,7 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import EditIcon from '@material-ui/icons/Edit';
 import EditTask from './EditTask';
 import useWindowDimensions from '../extra/WindowDimensions';
+import { getTeamNameWithId } from '../../request/teams';
 
 export default function Task({
   task,
@@ -19,10 +20,16 @@ export default function Task({
   refreshTeam,
   editable,
   deleteTask,
-  taskEditMode,
   userIsAdmin,
 }) {
-  const { _id: taskId, name, description, date: stringDate } = task;
+  const {
+    _id: taskId,
+    name,
+    description,
+    date: stringDate,
+    ownerTeamId,
+  } = task;
+  const [ownerTeamName, setOwnerTeamName] = useState('');
   const { width } = useWindowDimensions();
   const [responsiveStyle, setResponsiveStyle] = useState();
   const [showArrow, setShowArrow] = useState(false);
@@ -37,11 +44,21 @@ export default function Task({
   // eslint-disable-next-line arrow-body-style
   useEffect(() => {
     if (!editable) {
-      setResponsiveStyle({
-        gridTemplateColumns: `50px 5fr ${
-          date ? `30px ${width <= 700 ? '130px' : '160px'}` : ''
-        }`,
-      });
+      if (width <= 700) {
+        setResponsiveStyle({
+          gridTemplateColumns: `50px 5fr ${date ? '30px 130px' : ''}`,
+          gridTemplateRows: dropDescrip
+            ? 'minmax(2.5rem, auto) 2rem  auto'
+            : 'minmax(2.5rem, auto) auto',
+        });
+      } else {
+        setResponsiveStyle({
+          gridTemplateColumns: `50px 5fr 1fr ${date ? '30px 160px' : ''}`,
+          gridTemplateRows: dropDescrip
+            ? 'minmax(2.5rem, auto) 2rem  auto'
+            : 'minmax(2.5rem, auto) auto',
+        });
+      }
     } else {
       if (width <= 700) {
         setResponsiveStyle({
@@ -60,6 +77,20 @@ export default function Task({
       }
     }
   }, [width, dropDescrip, stringDate]);
+
+  const [nameStyle, setNameStyle] = useState();
+  useEffect(() => {
+    if (dropDescrip && editable && width <= 700)
+      setNameStyle({ gridColumn: '2/7' });
+    else if (dropDescrip && !editable && width > 700)
+      setNameStyle({ gridColumn: '2/4' });
+    else setNameStyle({ gridColumn: '2/3' });
+  }, [width, dropDescrip]);
+
+  useEffect(async () => {
+    setOwnerTeamName(await getTeamNameWithId(ownerTeamId));
+  }, []);
+
   const timeoutId = useRef('');
   const intervalId = useRef('');
   const [opacity, setOpacity] = useState(1);
@@ -94,47 +125,52 @@ export default function Task({
         onClick={() => setDropDescrip(true)}
         style={{ ...responsiveStyle, opacity }}
       >
-        {taskEditMode ? (
-          <EditIcon
-            className="task-button"
-            onMouseOver={(e) => e.stopPropagation()}
-            onMouseOut={(e) => e.stopPropagation()}
-            onClick={async (e) => {
-              e.stopPropagation();
-              toggleShowEditTask();
-            }}
-          />
-        ) : (
+        {showArrow || dropDescrip ? (
           <>
-            {showArrow || dropDescrip ? (
-              <>{dropDescrip ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} </>
-            ) : (
+            {dropDescrip ? (
               <>
-                {isDone ? (
-                  <RadioButtonCheckedIcon />
+                {editable ? (
+                  <EditIcon
+                    className="task-button blue-icon"
+                    onMouseOver={(e) => e.stopPropagation()}
+                    onMouseOut={(e) => e.stopPropagation()}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      toggleShowEditTask();
+                    }}
+                  />
                 ) : (
-                  <RadioButtonUncheckedIcon />
-                )}{' '}
+                  <ArrowDropUpIcon />
+                )}
               </>
+            ) : (
+              <ArrowDropDownIcon />
             )}
           </>
+        ) : (
+          <>
+            {isDone ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon />}{' '}
+          </>
         )}
-        <h4
-          style={{
-            gridColumn: dropDescrip && editable && width <= 700 ? '2/7' : '2/3',
-          }}
-        >
-          {name}
-        </h4>
+        <h4 style={nameStyle}>{name}</h4>
+        {width > 700 && !editable && !dropDescrip && (
+          <p className="task-team-name">{ownerTeamName}</p>
+        )}
         {(date || (editable && dropDescrip && width <= 700)) && (
           <>
             <CalendarTodayIcon />
-            <h5 style={{ color: pastDate ? '#e84545' : 'white' }}>
-              {date
-                ? moment(date).calendar(null, {
-                    sameElse: 'dddd MMMM h:mm A',
-                  })
-                : ''}
+            <h5
+              style={{
+                color: pastDate && date ? '#e84545' : 'white',
+              }}
+            >
+              {date ? (
+                moment(date).calendar(null, {
+                  sameElse: 'dddd MMMM h:mm A',
+                })
+              ) : (
+                <p style={{ opacity: '0.5' }}>No date</p>
+              )}
             </h5>
           </>
         )}
@@ -165,7 +201,9 @@ export default function Task({
             )}
           </>
         )}
-
+        {dropDescrip && !editable && (
+          <p style={{ gridColumn: '1/7' }}>{ownerTeamName}</p>
+        )}
         {dropDescrip && (
           <div
             className="task-description"
@@ -177,7 +215,7 @@ export default function Task({
       </div>
       {showEditTask && (
         <EditTask
-          taskId={taskId}
+          task={task}
           teamId={teamId}
           refreshTeam={refreshTeam}
           close={toggleShowEditTask}

@@ -3,11 +3,10 @@ import './Teams.css';
 import Button from '@material-ui/core/Button';
 import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import EditIcon from '@material-ui/icons/Edit';
 import TaskContainer from '../Task/TaskContainer';
 import AddTask from '../Task/AddTask';
-import MembersContainer from './Member/MembersContainer';
-import AddMember from './Member/AddMember';
+import MembersContainer from '../Member/MembersContainer';
+import AddMember from '../Member/AddMember';
 import EditTeam from './EditTeam';
 import DeleteTeam from './DeleteTeam';
 import LeaveTeam from './LeaveTeam';
@@ -33,7 +32,6 @@ function TeamDescription({
   const [showEditTeam, toggleShowEditTeam] = useReducer((st) => !st, false);
   const [showDeleteTeam, toggleShowDeleteTeam] = useReducer((st) => !st, false);
   const [showLeaveTeam, toggleShowLeaveTeam] = useReducer((st) => !st, false);
-  const [taskEditMode, toogleTaskEditMode] = useReducer((st) => !st, false);
   const { width } = useWindowDimensions();
   const numAdmins = members.reduce((acc, curr) => acc + curr.isAdmin, 0);
   function refreshTeam() {
@@ -53,26 +51,17 @@ function TeamDescription({
         teamId={currTeam._id}
         userIsAdmin={userIsAdmin}
         refreshTeam={refreshTeam}
-        taskEditMode={taskEditMode}
         editable
         style={{ borderRadius: userIsAdmin ? '' : '5px' }}
       />
       {userIsAdmin && (
-        <div className="config-tasks">
-          <div
-            className="add-task"
-            onClick={toggleShowAddTask}
-            style={tasks && tasks.length ? {} : { borderRadius: '5px' }}
-          >
-            <LibraryAddIcon className="blue-icon" />
-            <h5>Add new task</h5>
-          </div>
-          {tasks.length > 0 && (
-            <div className="add-task" onClick={toogleTaskEditMode}>
-              <EditIcon className="blue-icon" />
-              <h5>{`Edit tasks ${taskEditMode ? 'on' : 'off'}`}</h5>
-            </div>
-          )}
+        <div
+          className="add-task"
+          onClick={toggleShowAddTask}
+          style={tasks && tasks.length ? {} : { borderRadius: '5px' }}
+        >
+          <LibraryAddIcon className="blue-icon" />
+          <h5>Add new task</h5>
         </div>
       )}
       <h3>Members</h3>
@@ -142,7 +131,7 @@ function TeamDescription({
       {showEditTeam && (
         <EditTeam
           close={toggleShowEditTeam}
-          currTeamId={currTeam._id}
+          currTeam={currTeam}
           refreshTeam={refreshTeam}
         />
       )}
@@ -154,7 +143,12 @@ function TeamDescription({
         />
       )}
       {showLeaveTeam && (
-        <LeaveTeam close={toggleShowLeaveTeam} currTeam={currTeam} />
+        <LeaveTeam
+          close={toggleShowLeaveTeam}
+          currTeam={currTeam}
+          resetTeams={resetTeams}
+          lastAdmin={numAdmins === 1}
+        />
       )}
       {width <= 700 && (
         <h2 className="responsive-teams-button" onClick={resetTeams}>

@@ -3,7 +3,7 @@ import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import PersonIcon from '@material-ui/icons/Person';
 import RestoreIcon from '@material-ui/icons/Restore';
-import { toggleAdmin } from '../../../request/teams';
+import { toggleAdmin } from '../../request/teams';
 
 export default function Member({
   teamId,
@@ -54,14 +54,14 @@ export default function Member({
     }, 2000);
   }
 
-  function handleAdminStatusChange() {
+  async function handleAdminStatusChange() {
     toggleShowAdminStatus();
     if (numAdmins === 1 && memberIsAdmin) {
       errHandleAdminStatusChange();
       return;
     }
-    toggleAdmin(teamId, memberId);
-    refreshTeam();
+    await toggleAdmin(teamId, memberId);
+    await refreshTeam();
   }
 
   // eslint-disable-next-line arrow-body-style

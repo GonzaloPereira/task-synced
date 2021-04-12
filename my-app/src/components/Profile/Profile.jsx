@@ -41,7 +41,8 @@ export default function Profile() {
       {showEditProfile && (
         <EditProfile
           close={toggleShowEditProfile}
-          userId={currentUser._id}
+          currentUserName={currentUser.name}
+          currentUserId={currentUser._id}
           refreshUser={refreshUser}
         />
       )}

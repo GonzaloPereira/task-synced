@@ -73,22 +73,28 @@ exports.deleteMemberWithId = async (req, res) => {
         $pull: { teams: { _id: req.params.teamId }, tasks: { _id: tasksId } },
       }
     ).exec();
+
+    addNotification({ teamName: team.name }, [req.params.memberId], 6);
+
     res.send('Sucessfully removed the member');
   } catch (err) {
     res.send(err);
   }
 };
 
-exports.changeMemberAdminStatus = async (req, res, next) => {
+exports.changeMemberAdminStatus = async (req, res) => {
   try {
-    await Team.updateOne(
+    const team = await Team.findOneAndUpdate(
       { _id: req.params.teamId, 'members._id': req.params.memberId },
       {
         $bit: { 'members.$.isAdmin': { xor: 1 } },
       }
     ).exec();
+
+    addNotification({ teamName: team.name }, [req.params.memberId], 7);
+
     res.send('Update member to admin sucessfully');
   } catch (err) {
-    next(err);
+    res.send(err);
   }
 };

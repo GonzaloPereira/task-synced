@@ -4,6 +4,7 @@ const taskSchema = new mongoose.Schema({
   name: String,
   description: String,
   date: Date,
+  ownerTeamId: String,
 });
 const teamSchema = new mongoose.Schema({
   name: String,

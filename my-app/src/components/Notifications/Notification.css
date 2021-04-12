@@ -21,7 +21,7 @@
   background-color: #393e46;
   display: grid;
   grid-template-columns: 50px 1fr 40px;
-  grid-template-rows: 25px auto 25px;
+  grid-template-rows: 35px auto 20px;
   padding: 10px 0;
   border-radius: 5px;
   overflow-wrap: anywhere;

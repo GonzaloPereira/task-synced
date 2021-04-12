@@ -12,15 +12,18 @@ function formReducer(state, event) {
     [event.name]: event.value,
   };
 }
-export default function EditTask({ close, teamId, refreshTeam, taskId }) {
+export default function EditTask({ close, teamId, refreshTeam, task }) {
   const [formData, setFormData] = useReducer(formReducer, {
+    name: task.name,
+    description: task.description,
+    date: moment(task.date).utc().format('YYYY-MM-DDTHH:mm:ss'),
     changeDate: false,
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { refreshUser } = useAuth();
   const mounted = useRef(false);
-
+  console.log(formData.date);
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -30,15 +33,12 @@ export default function EditTask({ close, teamId, refreshTeam, taskId }) {
     try {
       setError('');
       setLoading(true);
-
-      // create task and give teamId
-      const task = {
+      const taskData = {
         ...formData,
         date: formData.date ? moment(formData.date).toISOString() : '',
       };
-      if (!task.changeDate) delete task.date;
-      delete task.changeDate;
-      const res = await editTaskForTeam(teamId, taskId, task);
+      // create task and give teamId
+      const res = await editTaskForTeam(teamId, task._id, taskData);
       if (!res.ok) throw new Error();
       await close();
       await refreshTeam();
@@ -59,10 +59,7 @@ export default function EditTask({ close, teamId, refreshTeam, taskId }) {
   function handleChange(event) {
     setFormData({
       name: event.target.name,
-      value:
-        event.target.type === 'checkbox'
-          ? event.target.checked
-          : event.target.value,
+      value: event.target.value,
     });
   }
   return (
@@ -99,18 +96,6 @@ export default function EditTask({ close, teamId, refreshTeam, taskId }) {
             id="date"
             name="date"
             value={formData.date || ''}
-            onChange={handleChange}
-            min="2020-01-01"
-            max="2022-01-01"
-          />
-        </label>
-        <label htmlFor="changeDate">
-          <p style={{ display: 'inline-block' }}>Change date</p>
-          <input
-            type="checkbox"
-            id="changeDate"
-            name="changeDate"
-            value={formData.changeDate || ''}
             onChange={handleChange}
             min="2020-01-01"
             max="2022-01-01"

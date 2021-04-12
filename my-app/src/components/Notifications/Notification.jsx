@@ -3,6 +3,9 @@ import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import EditIcon from '@material-ui/icons/Edit';
+import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import moment from 'moment';
 import { deleteNotification } from '../../request/user';
 
@@ -14,6 +17,14 @@ function getIcon(type) {
       return <PlaylistAddCheckIcon className="notification-icon red-icon" />;
     case 3:
       return <GroupAddIcon className="notification-icon blue-icon" />;
+    case 4:
+      return <EditIcon className="notification-icon blue-icon" />;
+    case 5:
+      return <EditIcon className="notification-icon blue-icon" />;
+    case 6:
+      return <HighlightOffIcon className="notification-icon red-icon" />;
+    case 7:
+      return <SupervisorAccountIcon className="notification-icon blue-icon" />;
     default:
       return <DoneOutlineIcon className="notification-icon" />;
   }
