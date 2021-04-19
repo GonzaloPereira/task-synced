@@ -8,7 +8,7 @@ export async function getTeamNameWithId(teamId) {
 
 export async function addMember(teamId, user) {
   const team = await getTeam(teamId);
-  if (team.members.find((member) => String(member._id) === user._id))
+  if (team.members.find((member) => String(member._id) === String(user._id)))
     throw new Error('Member already in team');
   return fetch(`/api/teams/${teamId}/members`, {
     method: 'POST',

@@ -18,7 +18,12 @@ exports.postTeam = async (req, res) => {
     members: members,
     tasks: tasks,
   });
-  res.send(await team.save());
+  try {
+    const savedTeam = await team.save();
+    res.send(savedTeam);
+  } catch (err) {
+    res.send(err);
+  }
 };
 
 exports.getTeamWithId = (req, res) => {

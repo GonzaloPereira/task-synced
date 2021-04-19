@@ -34,7 +34,8 @@ export default function CreateTeam({ close }) {
       if (!res.ok) throw new Error();
       await close();
       await refreshUser();
-    } catch {
+    } catch (err) {
+      console.log(err);
       setError('Failed to create team');
     }
     if (mounted.current) {

@@ -33,11 +33,9 @@ exports.postMember = async (req, res) => {
       }
     ).exec();
 
-    await addNotification(
-      { teamName: team.name },
-      [String(newMember._id) === String(req.user._id) ? '' : newMember._id],
-      3
-    );
+    if (String(newMember._id) !== String(req.user._id)) {
+      addNotification({ teamName: team.name }, [newMember._id], 3);
+    }
 
     res.send('Sucessfully added member');
   } catch (err) {
@@ -52,7 +50,7 @@ exports.getMemberWithId = (req, res) => {
     } else {
       res.json(
         foundTeam.members.find(
-          (member) => String(member._id) === req.params.memberId
+          (member) => String(member._id) === String(req.params.memberId)
         )
       );
     }
@@ -73,9 +71,9 @@ exports.deleteMemberWithId = async (req, res) => {
         $pull: { teams: { _id: req.params.teamId }, tasks: { _id: tasksId } },
       }
     ).exec();
-
-    addNotification({ teamName: team.name }, [req.params.memberId], 6);
-
+    if (String(req.params.memberId) !== String(req.user._id)) {
+      addNotification({ teamName: team.name }, [req.params.memberId], 6);
+    }
     res.send('Sucessfully removed the member');
   } catch (err) {
     res.send(err);
@@ -91,7 +89,9 @@ exports.changeMemberAdminStatus = async (req, res) => {
       }
     ).exec();
 
-    addNotification({ teamName: team.name }, [req.params.memberId], 7);
+    if (String(req.params.memberId) !== String(req.user._id)) {
+      addNotification({ teamName: team.name }, [req.params.memberId], 7);
+    }
 
     res.send('Update member to admin sucessfully');
   } catch (err) {

@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import Signup from '../Auth/Signup';
 import Login from '../Auth/Login';
-import Join from '../Auth/Join';
+import Join from '../Join/Join';
 import App from './App';
 import PrivateRoute from '../Routes/PrivateRoute';
 import PublicRoute from '../Routes/PublicRoute';

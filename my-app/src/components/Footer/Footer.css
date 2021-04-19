@@ -1,11 +1,10 @@
 .footer {
-  text-align: center;
   color: white;
   height: 50px;
   width: 100%;
-  padding: auto;
+  padding: auto 0;
+  display: flex;
+  align-content: center;
+  justify-content: center;
   background-color: #222831;
-}
-.footer p {
-  margin: 10px 10px;
 }
