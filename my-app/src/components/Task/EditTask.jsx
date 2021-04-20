@@ -16,7 +16,7 @@ export default function EditTask({ close, teamId, refreshTeam, task }) {
   const [formData, setFormData] = useReducer(formReducer, {
     name: task.name,
     description: task.description,
-    date: moment(task.date).utc().format('YYYY-MM-DDTHH:mm:ss'),
+    date: moment(task.date).format('YYYY-MM-DDTHH:mm:ss'),
     changeDate: false,
   });
   const [error, setError] = useState('');

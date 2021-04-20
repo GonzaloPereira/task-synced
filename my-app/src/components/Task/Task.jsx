@@ -149,7 +149,7 @@ export default function Task({
           </>
         ) : (
           <>
-            {isDone ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon />}{' '}
+            {isDone ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon />}
           </>
         )}
         <h4 style={nameStyle}>{name}</h4>
