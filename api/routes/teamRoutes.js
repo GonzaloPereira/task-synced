@@ -37,7 +37,7 @@ exports.getTeamWithId = (req, res) => {
 };
 
 exports.getTeamNameWithId = (req, res) => {
-  Team.findOne({ _id: req.params.teamId }, (err, foundTeam) => {
+  Team.findOne({ _id: req.params.teamId }, { name: 1 }, (err, foundTeam) => {
     if (err) {
       res.send('');
     } else {

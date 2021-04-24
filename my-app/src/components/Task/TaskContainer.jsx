@@ -22,6 +22,13 @@ export default function TaskContainer({
       console.log(err);
     }
   }
+  tasks.sort((task1, task2) => {
+    if (task1.date == null) return 1;
+    if (task2.date == null) return -1;
+    if (task1.date < task2.date) return -1;
+    if (task1.date > task2.date) return 1;
+    return 0;
+  });
   return (
     <div className="tasks-container" style={style}>
       {tasks.map((task, idx) => (

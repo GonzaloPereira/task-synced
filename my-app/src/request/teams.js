@@ -3,7 +3,11 @@ export async function getTeam(teamId) {
 }
 
 export async function getTeamNameWithId(teamId) {
-  return fetch(`/api/teams/${teamId}/name`).then((res) => res.json());
+  return fetch(`/api/teams/${teamId}/name`, {
+    headers: {
+      'Cache-Control': 'no-cache',
+    },
+  }).then((res) => res.json());
 }
 
 export async function addMember(teamId, user) {
