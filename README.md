@@ -1,6 +1,6 @@
-# Task Synced [![Website shields.io](https://img.shields.io/website-up-down-green-red/http/shields.io.svg)](https://tasksynced.herokuapp.com/)
+# Task Synced [![Website shields.io](https://img.shields.io/website-up-down-green-red/http/shields.io.svg)](https://tasksynced.herokuapp.com/)<img align="right" src="images/logo.png" alt="Logo" width="80" height="80" >
 
-<img align="center" src="images/logo.png" alt="Logo" width="80" height="80" >
+
 
 ## Sync tasks between teams
 
