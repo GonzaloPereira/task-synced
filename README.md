@@ -12,17 +12,11 @@ Task Synced is an organizer that allows you to keep all your tasks from differen
 - Create or join teams
 
 ## Built with
-- Front-end - [React.js]
-- Back-end - [Node.js] and [Express]
-- Database - [MongoDB] and [Mongoose]
-- Authenticaton - [Passport.js]
+- Front-end - [React.js](https://reactjs.org/)
+- Back-end - [Node.js](https://nodejs.org/en/) and [Express](http://expressjs.com/)
+- Database - [MongoDB](https://www.mongodb.com/) and [Mongoose](https://mongoosejs.com/)
+- Authenticaton - [Passport.js](http://www.passportjs.org/)
+
 
 ## Hosting
 Hosted in Heroku with Node using Build folder statically generate by React.
-
-[React.js](https://reactjs.org/)
-[Node.js](https://nodejs.org/en/)
-[Express](http://expressjs.com/)
-[MongoDB](https://www.mongodb.com/)
-[Mongoose](https://mongoosejs.com/)
-[Passport.js](http://www.passportjs.org/)
